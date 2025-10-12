@@ -84,22 +84,31 @@ streams)?
 ## Designing a data pipeline: loading
 
 ● What is the target system for the data (e.g., data warehouse, data lake, database)?
+> Not defined
 
 ● How often will the data be loaded (e.g., real-time, hourly, daily)?
+> Not defined
 
 ● Should the data be appended to the existing dataset or replace it entirely?
+> No
 
 ● Are there any schema or structural requirements for the target system?
+> Not defined
 
 ● How do you ensure data consistency and integrity during loading?
+> The cleaning process should have been made before
 
 ● What are the performance constraints?
+> The loading should be fast enough for the consumer (seconds to find a course for their dog)
 
 ● How will you handle schema changes in the target system?
+> Not defined
 
 ● Is there a need for historical data tracking or versioning in the target?
+> Not sure
 
 ● How will you monitor the loading process to ensure it runs successfully?
+> Not defined
 
 
 ## ETL or ELT
