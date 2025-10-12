@@ -22,45 +22,64 @@ Demo manipulation /4
 ## Designing a data pipeline: extraction
 
 ● What are the various data sources?
+> The data comes from the users accounts on the application then put into sql tables
+> For the demonstration data is generated
 
 ● What is the format of the data from each source (e.g., CSV, JSON, XML, database
 tables)?
+> Data is recieved via JSON from the app
 
 ● Is the data streaming or can it be loaded in batches?
+> Data is loaded in batches since we don't need in real time following of the apps
 
 ● What will the data look like on extraction?
+> In extraction the data will be presented in CSV files, one for each sql table
 
 ● How do you verify the data's accuracy and completeness at the source?
+> TODO: define the data cleaning process
 
 ● Are there any data access limitations or security constraints?
+> Not defined for now
 
 ● How frequently is the data updated or changed at the source?
+> It is updated at least every time a user signs up in the app, then loaded each time a *tour* is requested and when the *hot dog* resume given to the user
 
 ● Will you need to deal with incremental data extraction or full data loads?
+> Not defined for now 
 
 ● What are the volume and velocity of the data (e.g., terabytes per day, real-time
 streams)?
+> Not defined for now
 
 
 ## Designing a data pipeline: transformation
 
 ● What data cleansing steps are needed?
+> Remove incorrect data types given by the users (e.g strings for the User's age or number for the dog name)
 
 ● Are there any business rules that need to be applied during transformation?
+> Not defined for now
 
 ● Do you need to join or merge data from multiple sources?
+> Yes since each user is a source of data
 
 ● Are there any specific data formats or types that need to be converted?
+> JSON to CSV 
 
 ● How will you handle any data inconsistencies or errors?
+> TODO⚙️
 
 ● Are there any dependencies between the transformation steps (e.g., one transformation requires another to be completed first)?
+> TODO⚙️
 
 ● Do you need to enrich the data by adding additional calculated fields?
+> It can happen for calculating the total walking time for the dogs in the *hot dog*
 
 ● How will you track the changes to the data for auditing purposes?
+> Not defined
 
 ● Will transformation happen before or after loading?
+> Not defined
 
 ## Designing a data pipeline: loading
 
