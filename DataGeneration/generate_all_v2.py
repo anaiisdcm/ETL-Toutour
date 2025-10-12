@@ -6,7 +6,9 @@ import string
 
 
 
-
+""" 
+Wether to generate each csv file
+"""
 dog = True
 propriétaire = True
 promeneur = True
@@ -17,6 +19,11 @@ paiements_propriétaires = True
 promenade_requests = True
 notes_chien = True
 
+
+
+"""
+Generate all required csv
+"""
 
 if dog :
     # load & diplay
