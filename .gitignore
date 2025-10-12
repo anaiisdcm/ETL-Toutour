@@ -1,0 +1,47 @@
+# --- Environnements virtuels ---
+myenv/
+venv/
+.env/
+.venv/
+
+# --- Dossier de compilation Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Fichiers de logs et temporaires ---
+*.log
+*.tmp
+*.swp
+*.DS_Store
+
+# --- Fichiers de configuration locaux ---
+*.env
+.envrc
+.secret*
+*.sqlite3
+
+# --- Cache et fichiers d’IDE ---
+.vscode/
+.idea/
+*.iml
+
+# --- Sorties de tests ---
+.coverage
+htmlcov/
+.tox/
+pytest_cache/
+
+# --- Build / distributions ---
+build/
+dist/
+*.egg-info/
+*.egg
+
+# --- Notebooks / données temporaires ---
+.ipynb_checkpoints/
+data/
+*.csv
+*.xlsx
+*.json
+*.parquet
