@@ -6,49 +6,49 @@ from .database import Base
 class Dog(Base):
     __tablename__ = "dogs"  # nom de la table en minuscules et pluriel
 
-    dog_id = Column(String(100), primary_key=True)              # identifiant unique du chien
-    chip_id = Column(String(100), unique=True, nullable=False)  # numéro de puce
-    owner_id = Column(String(100), nullable=False)              # identifiant du propriétaire
-    name = Column(String(100), nullable=False)             # nom du chien
-    weight = Column(Float)                                  # poids en kg
-    breed = Column(String(50))                              # race du chien
-    picture = Column(LargeBinary)                           # photo en binaire
-    birth_date = Column(Date)                               # date de naissance
-    optimal_walk_duration = Column(Float)                  # durée promenade en heures
-    athleticism = Column(Float)                             # score de sportivité
+    dog_id = Column(String(100), primary_key=True)                      # identifiant unique du chien
+    chip_id = Column(String(100), unique=True, nullable=False)          # numéro de puce
+    owner_id = Column(String(100), nullable=False)                      # identifiant du propriétaire
+    name = Column(String(100), nullable=False)                          # nom du chien
+    weight = Column(Integer)                                            # poids en kg
+    breed = Column(String(50))                                          # race du chien
+    picture = Column(String(100))                                       # path vers la photo
+    birth_date = Column(Date)                                           # date de naissance
+    optimal_walk_duration = Column(Integer)                             # durée promenade en minutes
+    athleticism = Column(Integer)                                       # score de sportivité de 0 à 10
 
 
 class Owner(Base):
     __tablename__ = "owners"
 
-    owner_id = Column(String(100), primary_key=True)                  # unique ID
-    last_name = Column(String(100), nullable=False)                   # nom
-    first_name = Column(String(100), nullable=False)                  # prénom
-    email = Column(String(150), unique=True, nullable=False)          # email
-    phone = Column(String(20))                                        # numéro de téléphone
-    photo = Column(LargeBinary)                                       # photo binaire
-    bio = Column(Text)                                                # biographie / description
+    owner_id = Column(String(100), primary_key=True)                    # unique ID
+    last_name = Column(String(100), nullable=False)                     # nom
+    first_name = Column(String(100), nullable=False)                    # prénom
+    email = Column(String(150), unique=True, nullable=False)            # email
+    phone = Column(String(20))                                          # numéro de téléphone
+    picture = Column(String(100))                                       # path vers la photo
+    bio = Column(Text)                                                  # biographie / description
 
 
 class Walker(Base):
     __tablename__ = "walkers"
 
-    walker_id = Column(String(100), primary_key=True)                  # identifiant unique
-    last_name = Column(String(100), nullable=False)                    # nom
-    first_name = Column(String(100), nullable=False)                   # prénom
-    photo = Column(LargeBinary)                                        # photo binaire
-    bio = Column(Text)                                                 # biographie / description
-    verified_profile = Column(Boolean, default=False)                  # profil vérifié
-    email = Column(String(150), unique=True, nullable=False)           # mail
-    phone = Column(String(20))                                         # numéro de téléphone
-    birth_date = Column(Date)                                          # date de naissance
-    rib = Column(String(34))                                           # numéro RIB (IBAN français)
+    walker_id = Column(String(100), primary_key=True)                   # identifiant unique
+    last_name = Column(String(100), nullable=False)                     # nom
+    first_name = Column(String(100), nullable=False)                    # prénom
+    picture = Column(String(100))                                       # path vers la photo
+    bio = Column(Text)                                                  # biographie / description
+    verified_profile = Column(Boolean, default=False)                   # profil vérifié
+    email = Column(String(150), unique=True, nullable=False)            # mail
+    phone = Column(String(20))                                          # numéro de téléphone
+    birth_date = Column(Date)                                           # date de naissance
+    rib = Column(String(34))                                            # numéro RIB (IBAN français)
 
 
 class WalkerAvailability(Base):
     __tablename__ = "walker_availabilities"
 
-    availability_id = Column(String(100), primary_key=True)   # identifiant unique de la dispo
+    availability_id = Column(String(100), primary_key=True)             # identifiant unique de la dispo
     walker_id = Column(String(100), ForeignKey("walkers.walker_id"), nullable=False)  # lien vers le promeneur
     address = Column(String(255), nullable=False)                             # adresse de disponibilité
     start_datetime = Column(DateTime, nullable=False)                         # début de la disponibilité
@@ -65,7 +65,7 @@ class WalkRequest(Base):
     dog_id = Column(String(100), ForeignKey("dogs.dog_id"), nullable=False)      # lien vers le chien
     address = Column(String(255), nullable=False)                             # adresse de la promenade
     ideal_start_datetime = Column(DateTime, nullable=False)                   # début idéal
-    duration_request = Column(Float, nullable=True)                            # durée souhaitée (en heures), optionnelle
+    duration_request = Column(Integer, nullable=True)                            # durée souhaitée (en minutes), optionnelle
     distance_request = Column(Float, nullable=True)                            # distance souhaitée (en km), optionnelle
     favorite_walker_id = Column(String(100), ForeignKey("walkers.walker_id"), nullable=True)  # optionnel
     predicted_payment = Column(Float, nullable=True)                           # rémunération prédite, calculée automatiquement
@@ -84,7 +84,7 @@ class PastWalk(Base):
     distance = Column(Float)                                                     # distance parcourue (en km)
     start_datetime = Column(DateTime)                                           # début de la promenade
     end_datetime = Column(DateTime)                                             # fin de la promenade
-    photo = Column(LargeBinary)                                                 # photo de la promenade
+    photo = Column(String(100))                                       # path vers la photo
     dog_review_id = Column(String(100), nullable=True)                               # avis du chien (facultatif)
     walker_review_id = Column(String(100), nullable=True)                            # avis du promeneur (facultatif)
 
@@ -100,7 +100,7 @@ class WalkerReview(Base):
     walk_id = Column(String(100), ForeignKey("past_walks.walk_id"), nullable=False) # lien vers la promenade passée
     walker_id = Column(String(100), ForeignKey("walkers.walker_id"), nullable=False) # lien vers le promeneur évalué
     rating = Column(Float, nullable=False)                                     # note (ex: 1 à 5)
-    comment = Column(String(500), nullable=True)                               # commentaire optionnel
+    comment = Column(Text, nullable=True)                               # commentaire optionnel
 
     # Relations SQLAlchemy
     walker = relationship("Walker", back_populates="reviews")
@@ -114,7 +114,7 @@ class DogReview(Base):
     walk_id = Column(String(100), ForeignKey("past_walks.walk_id"), nullable=False) # lien vers la promenade passée
     dog_id = Column(String(100), ForeignKey("dogs.dog_id"), nullable=False)        # lien vers le chien évalué
     rating = Column(Float, nullable=False)                                     # note attribuée au chien
-    comment = Column(String(500), nullable=True)                               # commentaire optionnel
+    comment = Column(Text, nullable=True)                               # commentaire optionnel
 
     # Relations SQLAlchemy
     dog = relationship("Dog", back_populates="reviews")
