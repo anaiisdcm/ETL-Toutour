@@ -27,7 +27,7 @@ Demo manipulation /4
 
 ● What is the format of the data from each source (e.g., CSV, JSON, XML, database
 tables)?
-> Data is recieved via JSON from the app
+> Data is received via JSON from the app (like a py dict)
 
 ● Is the data streaming or can it be loaded in batches?
 > Data is loaded in batches since we don't need in real time following of the apps
@@ -37,28 +37,36 @@ tables)?
 
 ● How do you verify the data's accuracy and completeness at the source?
 > TODO: define the data cleaning process
+> Is it on the app or table ?
+> Clean before putting it in table and at reception
 
 ● Are there any data access limitations or security constraints?
 > Not defined for now
+> personnal data (id, name, age etc..)
 
 ● How frequently is the data updated or changed at the source?
-> It is updated at least every time a user signs up in the app, then loaded each time a *tour* is requested and when the *hot dog* resume given to the user
+> It is updated at least every time a user signs up in the app (every 50 users cf Niels), then loaded each time a *tour* is requested and when the *hot dog* resume given to the user
+> Reload every relevant(TBD) table before each tour 15s 
 
 ● Will you need to deal with incremental data extraction or full data loads?
-> Not defined for now 
+> Not defined for now
+>  
 
 ● What are the volume and velocity of the data (e.g., terabytes per day, real-time
 streams)?
 > Not defined for now
+> Check existing data for reference
 
 
 ## Designing a data pipeline: transformation
 
 ● What data cleansing steps are needed?
 > Remove incorrect data types given by the users (e.g strings for the User's age or number for the dog name)
+> Remove rows w/ missing IDs; Remove aberrant numbers (age, weight, ...); Incorrect format for num and mails; Users mut be adults (18);... 
 
 ● Are there any business rules that need to be applied during transformation?
 > Not defined for now
+> RGPD
 
 ● Do you need to join or merge data from multiple sources?
 > Yes since each user is a source of data
@@ -67,33 +75,37 @@ streams)?
 > JSON to CSV 
 
 ● How will you handle any data inconsistencies or errors?
+> Generate a key via hash to ensure integrity
 > TODO⚙️
 
 ● Are there any dependencies between the transformation steps (e.g., one transformation requires another to be completed first)?
 > TODO⚙️
+> Yes between app and cleaning of the rows
 
 ● Do you need to enrich the data by adding additional calculated fields?
 > It can happen for calculating the total walking time for the dogs in the *hot dog*
 
 ● How will you track the changes to the data for auditing purposes?
 > Not defined
+> Needed for money trades
+> Check if sql has versionning tool
 
 ● Will transformation happen before or after loading?
-> Not defined
+> Before yes cf up
 
 ## Designing a data pipeline: loading
 
 ● What is the target system for the data (e.g., data warehouse, data lake, database)?
-> Not defined
+> Database (why ?)
 
 ● How often will the data be loaded (e.g., real-time, hourly, daily)?
-> Not defined
+> hourly
 
 ● Should the data be appended to the existing dataset or replace it entirely?
-> No
+> No since we take data from user
 
 ● Are there any schema or structural requirements for the target system?
-> Not defined
+> Be compatible with IOS and Android
 
 ● How do you ensure data consistency and integrity during loading?
 > The cleaning process should have been made before
@@ -103,12 +115,13 @@ streams)?
 
 ● How will you handle schema changes in the target system?
 > Not defined
+> Bizarre la question...
 
 ● Is there a need for historical data tracking or versioning in the target?
-> Not sure
+> No need since every data his with *Toutour Inc.*
 
 ● How will you monitor the loading process to ensure it runs successfully?
-> Not defined
+> No idea for now
 
 
 ## ETL or ELT
