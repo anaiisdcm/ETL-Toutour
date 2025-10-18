@@ -1,19 +1,22 @@
 import pandas as pd
 import streamlit as st
 from datetime import datetime, timedelta
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from EL_DB_Toutour.database import engine, Base
 
-# --- Données simulées ---
-df_propriétaire = pd.read_csv('./data/df_proprietaire.csv', delimiter=';')
+# # --- Données simulées ---
+# df_propriétaire = pd.read_csv('./data_test_hot_dog/df_proprietaire.csv', delimiter=';')
 
-df_dog = pd.read_csv('./data/df_dog.csv', delimiter=';')
+# df_dog = pd.read_csv('./data_test_hot_dog/df_dog.csv', delimiter=';')
 
-df_promenades_passees = pd.read_csv('./data/df_promenades_passees.csv', delimiter=';')
+# df_promenades_passees = pd.read_csv('./data_test_hot_dog/df_promenades_passees.csv', delimiter=';')
 
-df_notes_chien = pd.read_csv('./data/df_notes_chien.csv', delimiter=';')
+# df_notes_chien = pd.read_csv('./data_test_hot_dog/df_notes_chien.csv', delimiter=';')
 
-df_notes_promeneurs =  pd.read_csv('./data/df_notes_promeneurs.csv', delimiter=';')
+# df_notes_promeneurs =  pd.read_csv('./data_test_hot_dog/df_notes_promeneurs.csv', delimiter=';')
 
-df_promeneurs = pd.read_csv('./data/df_promeneurs.csv', delimiter=';')
+# df_promeneurs = pd.read_csv('./data_test_hot_dog/df_promeneurs.csv', delimiter=';')
 
 
 # --- Configuration de la page ---
@@ -39,8 +42,10 @@ def reset_session():
 # --- Étape 1 : Connexion (sélection du propriétaire) ---
 if not st.session_state.connected_owner:
     st.header("Connexion propriétaire")
-    nom_prenom_proprietaire = st.selectbox("Sélectionnez votre nom :", [""] + list(df_propriétaire[['nom', 'prenom']].agg(' '.join, axis=1)))
-    id_proprietaire = df_propriétaire[df_propriétaire[['nom', 'prenom']].agg(' '.join, axis=1)==nom_prenom_proprietaire]['id_propriétaire'].iat[0] if nom_prenom_proprietaire!='' else ''
+    query_owner = "SELECT owner_id, last_name, first_name, CONCAT(last_name, ' ', first_name) AS full_name FROM owners;"
+    df_owner = pd.read_sql(query_owner, con=engine)
+    nom_prenom_proprietaire = st.selectbox("Sélectionnez votre nom :", [""] + list(df_owner['full_name']))
+    id_proprietaire = df_owner[df_owner[['last_name', 'first_name']].agg(' '.join, axis=1)==nom_prenom_proprietaire]['owner_id'].iat[0] if nom_prenom_proprietaire!='' else ''
     if id_proprietaire and st.button("Se connecter"):
         st.session_state.connected_owner = id_proprietaire
         st.rerun()
@@ -48,12 +53,15 @@ if not st.session_state.connected_owner:
 # --- Étape 2 : Sélection du chien ---
 elif st.session_state.connected_owner and not st.session_state.selected_dog:
     st.button("Déconnexion", on_click=reset_session)
-    st.success(f"Bienvenue {df_propriétaire[df_propriétaire['id_propriétaire'] == st.session_state.connected_owner]['prenom'].iat[0]} 👋")
+    query_owner_dogs = f"SELECT dog_id, name FROM dogs WHERE owner_id='{st.session_state.connected_owner}';"
+    df_owner_dogs = pd.read_sql(query_owner_dogs, con=engine)
+    query_owner_name = f"SELECT first_name FROM owners WHERE owner_id='{st.session_state.connected_owner}';"
+    df_owner = pd.read_sql(query_owner_name, con=engine)
+    st.success(f"Bienvenue {df_owner['first_name'].iat[0]} 👋")
     
-    # SELECT * FROM dog WHERE owner_id=id_proprietaire
-    chiens_possedes = df_dog[df_dog['owner_id']==st.session_state.connected_owner]['name']
-    nom_chien = st.selectbox("Sélectionnez votre chien :", [""] + list(chiens_possedes))
-    id_chien = df_dog[df_dog['name']==nom_chien]['id_dog'].iat[0] if nom_chien!='' else ''
+    nom_chien = st.selectbox("Sélectionnez votre chien :", [""] + list(df_owner_dogs['name']))
+    # f SELECT dog_id FROM Dog WHERE owner_id={st.session_state.connected_owner} AND name={nom_chien}
+    id_chien = df_owner_dogs[df_owner_dogs['name']==nom_chien]['dog_id'].iat[0] if nom_chien!='' else ''
     if id_chien and st.button("Valider"):
         st.session_state.selected_dog = id_chien
         st.rerun()
@@ -69,33 +77,44 @@ elif st.session_state.selected_dog:
     with col2:
         st.button("Changer de chien", on_click=reset_dog)
 
-    st.success(f"Connecté en tant que {df_propriétaire[df_propriétaire['id_propriétaire']==proprietaire][['prenom', 'nom']].agg(' '.join, axis=1).iat[0]}")
+    query_owner_name = f"SELECT first_name, last_name FROM owners WHERE owner_id='{st.session_state.connected_owner}';"
+    df_owner = pd.read_sql(query_owner_name, con=engine)
+    st.success(f"Connecté en tant que {df_owner[['first_name', 'last_name']].agg(' '.join, axis=1).iat[0]}")
+
+    query_dog_name = f"SELECT name FROM dogs WHERE owner_id='{st.session_state.connected_owner}' AND dog_id='{st.session_state.selected_dog}';"
+    df_dog_name = pd.read_sql(query_dog_name, con=engine)
+    st.subheader(f"Les promenades de {df_dog_name['name'].iat[0]} en {datetime.now().year}🐕")
+
+    query_past_walks = f"SELECT walk_id, walker_id, distance, start_datetime, end_datetime, dog_review_id, walker_review_id FROM past_walks WHERE dog_id='{st.session_state.selected_dog}' AND EXTRACT(YEAR FROM start_datetime) ={datetime.now().year};"
+    df_past_walks = pd.read_sql(query_past_walks, con=engine)
+    
+    # df_promenades_notees_dog = pd.merge(df_promenades_passees_dog, df_notes_chien.drop('id_dog', axis=1), on='id_promenade')
+
+    # df_promeneurs_notes_dog = pd.merge(df_promenades_passees_dog, df_notes_promeneurs.drop('id_promeneur', axis=1), on='id_promenade')
+
+    query_dog_reviews = f"SELECT rating, comment FROM dog_reviews JOIN past_walks ON dog_reviews.walk_id=past_walks.walk_id WHERE dog_reviews.dog_id='{st.session_state.selected_dog}' AND EXTRACT(YEAR FROM past_walks.start_datetime) ={datetime.now().year};"
+    df_dog_reviews = pd.read_sql(query_dog_reviews, con=engine)
+ 
+    query_walk_reviews = f"SELECT rating, comment FROM walker_reviews JOIN past_walks ON walker_reviews.walk_id=past_walks.walk_id WHERE past_walks.dog_id='{st.session_state.selected_dog}' AND EXTRACT(YEAR FROM past_walks.start_datetime) ={datetime.now().year};"
+    df_walk_reviews = pd.read_sql(query_walk_reviews, con=engine)
 
 
-
-    st.subheader(f"Les promenades de {df_dog[df_dog['id_dog']==chien]['name'].iat[0]} en {datetime.now().year}🐕")
-
-    # SELECT * FROM promenades_passees WHERE id_dog=chien AND YEAR(horodate_debut)=2025
-    df_promenades_passees_dog = df_promenades_passees[df_promenades_passees['id_dog']==chien]
-    df_promenades_passees_dog['horodate_debut'] = pd.to_datetime(df_promenades_passees_dog['horodate_debut'])
-    df_promenades_passees_dog['horodate_fin'] = pd.to_datetime(df_promenades_passees_dog['horodate_fin'])
-    df_promenades_passees_dog = df_promenades_passees_dog[df_promenades_passees_dog['horodate_debut'].dt.year==datetime.now().year]
-
-    df_promenades_notees_dog = pd.merge(df_promenades_passees_dog, df_notes_chien.drop('id_dog', axis=1), on='id_promenade')
-
-    df_promeneurs_notes_dog = pd.merge(df_promenades_passees_dog, df_notes_promeneurs.drop('id_promeneur', axis=1), on='id_promenade')
-
-    if not df_promenades_passees_dog.empty :
+    if not df_past_walks.empty :
+        # probalement des bugs ici
         # -----------------------------
         # INDICATEURS CLÉS
         # -----------------------------
-        duree_totale = (df_promenades_passees_dog['horodate_fin'] - df_promenades_passees_dog['horodate_debut']).sum()
-        distance_totale = df_promenades_passees_dog['distance'].sum()
+        duree_totale = (df_past_walks['end_datetime'] - df_past_walks['start_datetime']).sum()
+        distance_totale = df_past_walks['distance'].sum()
 
-        promenade_pref = df_promenades_notees_dog.loc[df_promenades_notees_dog["note"].idxmax()]
-        promenade_plus_longue = df_promenades_passees_dog.loc[df_promenades_passees_dog['distance'].idxmax()]
-        promeneur_pref = df_promeneurs_notes_dog.groupby("id_promeneur")["note"].mean().idxmax()
-        horaire_frequent = df_promenades_passees_dog['horodate_debut'].dt.hour.mode().iat[0]
+        promenade_pref = df_walk_reviews.loc[df_walk_reviews["rating"].idxmax()]
+        promenade_plus_longue = df_past_walks.loc[df_past_walks['distance'].idxmax()]
+        # Probablement un bug ici avec idxmax
+        promeneur_pref = df_walk_reviews.groupby("walker_id")["rating"].mean().idxmax()
+        query_best_walker = f"SELECT first_name, last_name FROM walkers WHERE dog_reviews.dog_id='{promeneur_pref}';"
+        df_best_walker = pd.read_sql(query_best_walker, con=engine)
+
+        horaire_frequent = df_past_walks['start_datetime'].dt.hour.mode().iat[0]
 
 
         # -----------------------------
@@ -113,30 +132,32 @@ elif st.session_state.selected_dog:
 
         col4, col5, col6 = st.columns(3)
         with col4:
-            st.metric("Promeneur préféré", df_promeneurs[df_promeneurs['id_promeneur']==promeneur_pref][['prenom', 'nom']].agg(' '.join, axis=1).iat[0])
+            st.metric("Promeneur préféré", df_best_walker[['first_name', 'last_name']].agg(' '.join, axis=1).iat[0])
         with col5:
-            st.metric("Promenade la plus longue", f"{promenade_plus_longue['distance']:.1f} km ({promenade_plus_longue['horodate_debut'].strftime('%d/%m')})")
+            st.metric("Promenade la plus longue", f"{promenade_plus_longue['distance']:.1f} km ({promenade_plus_longue['start_datetime'].strftime('%d/%m')})")
         with col6:
-            st.metric(f"Promenade préférée de {df_dog[df_dog['id_dog']==chien]['name'].iat[0]}", f"{promenade_pref['note']} ⭐ ({promenade_pref['horodate_debut'].strftime('%d/%m')})")
+            st.metric(f"Promenade préférée de {df_dog_name['name'].iat[0]}", f"{promenade_pref['rating']} ⭐ ({promenade_pref['start_datetime'].strftime('%d/%m')})")
 
         # -----------------------------
         # COMMENTAIRES POSITIFS
         # -----------------------------
 
-        bons_commentaires = df_promenades_notees_dog[df_promenades_notees_dog["note"] >= 4]
+        bons_commentaires = df_dog_reviews[df_dog_reviews["rating"] >= 4]
         if not bons_commentaires.empty:
             st.write("### Votre chien est apprécié !")
             displayed_comments = 0
             for _, row in bons_commentaires.iterrows():
-                if displayed_comments < 5 and not(pd.isnull(row['commentaire'])):
-                    st.badge(f"★ {row['note']} — {row['commentaire']}")
+                if displayed_comments < 5 and not(pd.isnull(row['comment'])):
+                    st.badge(f"★ {row['rating']} — {row['comment']}")
                     displayed_comments +=1
 
         # -----------------------------
         # GRAPHIQUES DYNAMIQUES
         # -----------------------------
         st.write("### Répartition des distances de balade avec Toutour")
-        df_monthly = df_promenades_passees_dog.groupby(df_promenades_passees_dog['horodate_debut'].dt.month)[["distance"]].sum()
+        df_monthly = df_past_walks.groupby(df_past_walks['start_datetime'].dt.month)[["distance"]].sum()
         df_monthly.index = [datetime(datetime.now().year, m, 1).strftime("%b") for m in df_monthly.index]
         st.line_chart(df_monthly)
+    else :
+        st.badge("Pas de balade réalisée sur Toutour cette année :(")
 
