@@ -227,41 +227,25 @@ if past_walks :
 
 
 
-if walker_review :
-    # --- walker_review
-    n_walker_review = n_past_walk 
-    
-    walk_id = rd.choices(df_past_walks['walk_id'], k=n_walker_review)
-    walker_id = rd.choices(df_walker['walker_id'], k=n_walker_review)
-    rating = nrd.choice(np.arange(1, 6), size=n_walker_review, replace=True, p=[0.1, 0.05, 0.05, 0.3, 0.5])
-    comment = ["Commentaire pour " + str(i) for i in range(n_walker_review)]
-    review_id = [walk_id[i] + "_walkerreview" for i in range(n_walker_review)]
-
-    df_ratings_walkers = pd.DataFrame({
-        'review_id': review_id,
-        'walk_id': walk_id,
-        'walker_id': walker_id,
-        'rating': rating,
-        'comment': comment
+# --- Walker Reviews
+if walker_review:
+    df_walker_review = pd.DataFrame({
+        'review_id': [wid + "_walkerreview" for wid in df_past_walks['walk_id']],
+        'walk_id': df_past_walks['walk_id'],
+        'walker_id': df_past_walks['walker_id'],
+        'rating': nrd.choice(np.arange(1, 6), size=len(df_past_walks), replace=True, p=[0.1, 0.05, 0.05, 0.3, 0.5]),
+        'comment': ["Commentaire pour walk " + str(i) for i in range(len(df_past_walks))]
     })
-    df_ratings_walkers.to_csv("./data_out/df_WalkerReview.csv", index=False)
+    df_walker_review.to_csv("./data_out/df_WalkerReview.csv", index=False)
 
-if dog_review :
-    # --- dog_review 
-    n_dog_review = n_past_walk
-    
-    walk_id = rd.choices(df_past_walks['walk_id'], k=n_dog_review)
-    dog_id = rd.choices(np.arange(0, n_dog, 1), k=n_dog_review)
-    rating = nrd.choice(np.arange(1, 6), size=n_walker_review, replace=True, p=[0.1, 0.05, 0.05, 0.3, 0.5])
-    comment = ["comment pour chien " + str(i) for i in range(n_dog_review)]
-    review_id = [walk_id[i] + "_dogreview" for i in range(n_dog_review)]
-
+# --- Dog Reviews
+if dog_review:
     df_dog_review = pd.DataFrame({
-        'review_id': review_id,
-        'walk_id': walk_id,
-        'dog_id': dog_id,
-        'rating': rating,
-        'comment': comment
+        'review_id': [wid + "_dogreview" for wid in df_past_walks['walk_id']],
+        'walk_id': df_past_walks['walk_id'],
+        'dog_id': df_past_walks['dog_id'],
+        'rating': nrd.choice(np.arange(1, 6), size=len(df_past_walks), replace=True, p=[0.1, 0.05, 0.05, 0.3, 0.5]),
+        'comment': ["Commentaire pour chien " + str(i) for i in range(len(df_past_walks))]
     })
     df_dog_review.to_csv("./data_out/df_DogReview.csv", index=False)
 
