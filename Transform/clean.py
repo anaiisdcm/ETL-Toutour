@@ -27,8 +27,9 @@ def clean_dog(df_dog):
     # Make a copy to avoid modifying the original
     df = df_dog.copy()
 
+
     #Remove dogs with missing ID, name or owner ID.
-    df = df.dropna(subset=['id_dog','name','owner_ID'])
+    df = df.dropna(subset=['dog_id','name','owner_id'])
 
 
     # Remove dogs with invalid weight
@@ -38,16 +39,15 @@ def clean_dog(df_dog):
     
     # Remove dogs with invalid age
     # Weight cannot be older than 35 years old.
-    df = df.drop(df[(df['birthdate'] < 1990)].index)
+    df = df.drop(df[(df['birth_date'] < 1990)].index)
 
     # Remove dogs with invalid sportivity
     # Sportivity should be either 'Low', 'Medium' or 'High'.
-    df = df.drop(df[~(df['sportivity'].isin(['Low', 'Medium', 'High']))].index)
+    df = df.drop(df[~(df['athleticism'].isin(['Low', 'Medium', 'High']))].index)
 
     return df
 
-
-def clean_propriétaire(df_propriétaire):
+def clean_proprietaire(df_proprietaire):
     """
     Clean and validate propriétaires data
     
@@ -57,28 +57,28 @@ def clean_propriétaire(df_propriétaire):
     Returns:
         pandas.DataFrame: Cleaned propriétaires data
     """
-    if df_propriétaire.empty:
+    if df_proprietaire.empty:
         print("⚠️  No propriétaires data to clean")
-        return df_propriétaire
+        return df_proprietaire
     
     print(f"🧹 Cleaning propriétaires data...")
-    print(f"Starting with {len(df_propriétaire)} propriétaires")
+    print(f"Starting with {len(df_proprietaire)} propriétaires")
     
     # Make a copy to avoid modifying the original
-    df = df_propriétaire.copy()
+    df = df_proprietaire.copy()
 
     #Remove propriétaires with missing ID or name
-    df = df.dropna(subset=['id_propriétaire','nom'])
+    df = df.dropna(subset=['owner_id','last_name','first_name'])
 
     #Remove propriétaires with missing mail and phone number
-    df = df.dropna(subset=['mail','phone'], how='all')
+    df = df.dropna(subset=['email','phone'], how='all')
 
     # Remove propriétaires with invalid e-mail
     # Keep only emails that contain exactly one '@' and at least one '.' before the '@'
     df = df[
-        (df['mail'].str.count('@') == 1) &
-        (df['mail'].str.contains('.', na=False)) &
-        (df['mail'].str.split('@').str[0].str.count('.') >= 1)
+        (df['email'].str.count('@') == 1) &
+        (df['email'].str.contains('.', na=False)) &
+        (df['email'].str.split('@').str[0].str.count('.') >= 1)
     ]
    
     # Remove propriétaires with invalid phone number
@@ -232,7 +232,7 @@ def clean_promenades_requests(df_promenades_requests):
     
     return df
 
-def clean_promenades_passées(df_promenades_passées):
+def clean_promenades_passees(df_promenades_passees):
     """
     Clean and validate promenades passées data
     
@@ -242,15 +242,15 @@ def clean_promenades_passées(df_promenades_passées):
     Returns:
         pandas.DataFrame: Cleaned promenades passées data
     """
-    if df_promenades_passées.empty:
+    if df_promenades_passees.empty:
         print("⚠️  No promenades passées data to clean")
-        return df_promenades_passées
+        return df_promenades_passees
     
     print(f"🧹 Cleaning promenades passées data...")
-    print(f"Starting with {len(df_promenades_passées)} promenades passées")
+    print(f"Starting with {len(df_promenades_passees)} promenades passées")
     
     # Make a copy to avoid modifying the original
-    df = df_promenades_passées.copy()
+    df = df_promenades_passees.copy()
 
     #Remove promenades passées with missing promenade ID, promeneur ID or dog ID
     df = df.dropna(subset=['id_promenade','id_promeneur','id_chien'])
@@ -335,7 +335,7 @@ def clean_note_chien(df_notes_chien):
 
     return df 
 
-def clean_paiements_propriétaires(df_paiements_propriétaires):
+def clean_paiements_proprietaires(df_paiements_proprietaires):
     """
     Clean and validate paiements propriétaires data
     
@@ -345,15 +345,15 @@ def clean_paiements_propriétaires(df_paiements_propriétaires):
     Returns:
         pandas.DataFrame: Cleaned paiements propriétaires data
     """
-    if df_paiements_propriétaires.empty:
+    if df_paiements_proprietaires.empty:
         print("⚠️  No paiements propriétaires data to clean")
-        return df_paiements_propriétaires
+        return df_paiements_proprietaires
     
     print(f"🧹 Cleaning paiements propriétaires data...")
-    print(f"Starting with {len(df_paiements_propriétaires)} paiements propriétaires")
+    print(f"Starting with {len(df_paiements_proprietaires)} paiements propriétaires")
     
     # Make a copy to avoid modifying the original
-    df = df_paiements_propriétaires.copy()
+    df = df_paiements_proprietaires.copy()
 
     #Remove paiements  with missing promenade ID or montant
     df = df.dropna(subset=['montant','id_promenade'])
@@ -379,4 +379,24 @@ def clean_paiements_propriétaires(df_paiements_propriétaires):
     
     return df
 
+def clean_csv(path_csv, cleaning_function):
+    df_to_clean = pd.read_csv(path_csv)
+    df_cleaned = cleaning_function(df_to_clean)
+    df_cleaned.to_csv(path_csv)
+    return None
 
+
+def clean_all():
+    clean_csv("./data_out/df_Dog.csv", clean_dog)
+    clean_csv("./data_out/df_Owner.csv", clean_proprietaire)
+    clean_csv("./data_out/df_Walker.csv", clean_promeneur)
+    clean_csv("./data_out/df_WalkerAvailability.csv", clean_promeneur_dispo)
+    clean_csv("./data_out/df_WalksRequets.csv", clean_promenades_requests)
+    clean_csv("./data_out/df_past_walks.csv", clean_promenades_passees)
+    clean_csv("./data_out/df_WalkerReview.csv", clean_note_promeneur)
+    clean_csv("./data_out/df_DogReview.csv", clean_note_chien)
+    clean_csv("./data_out/df_OwnerPayment.csv", clean_paiements_proprietaires)
+
+
+if __name__ == "__main__":
+    clean_all()
