@@ -125,10 +125,10 @@ if walker :
         'first_name': first_name,
         'picture': picture,
         'bio': bio,
-        'profil_verifie': profil_verifie,
+        'verified_profile': profil_verifie,
         'email': email,
         'phone': phone,
-        'date_naissance': birth_date,
+        'birth_date': birth_date,
         'rib': rib
     })
     df_walker.to_csv("./data_out/df_Walker.csv", index=False)
