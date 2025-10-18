@@ -1,5 +1,5 @@
-from .database import engine, Base
-from . import models
+from EL_DB_Toutour.database import engine, Base
+from EL_DB_Toutour import models
 from sqlalchemy import text
 
 def init_db():
@@ -24,6 +24,3 @@ def init_db():
     print("\n🛠️ Création des nouvelles tables ORM...")
     Base.metadata.create_all(bind=engine)
     print("✅ Base de données initialisée avec succès !")
-
-if __name__ == "__main__":
-    init_db()

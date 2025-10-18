@@ -1,9 +1,21 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy_utils import database_exists, create_database
 
-DATABASE_URL = "postgresql+psycopg2://thomas:@localhost:5432/toutourBase"
+DATABASE_URL = "postgresql+psycopg2://usertoutour:mdp@localhost:5432/toutourBase"
 #postgresql+psycopg2://<utilisateur>:<mot_de_passe>@<hôte>:<port>/<nom_de_la_base>
+#Possibilité de créer un utilisateur dans PostgreSQL pour ce projet :
+#sudo -u postgres psql (bash)
+#CREATE ROLE usertoutour WITH LOGIN PASSWORD 'mdp'; (SQL)
+#ALTER ROLE usertoutour WITH SUPERUSER; (SQL)
+#\du --pour vérifier les droits des utilisateurs postgres (SQL)
 engine = create_engine(DATABASE_URL, echo=True)
 SessionLocal = sessionmaker(bind=engine)
 
 Base = declarative_base()
+
+if not database_exists(engine.url):
+    create_database(engine.url)
+    print("✅ Base de données 'toutourBase' créée.")
+else:
+    print("✅ Base déjà existante.")
