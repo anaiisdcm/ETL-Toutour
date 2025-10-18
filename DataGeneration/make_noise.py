@@ -85,17 +85,43 @@ def ExageratedValues(df, columns, n_faked_c):
     return df
         
         
+def make_noise():
+    """
+    Add noise (all kind) to automatically generated data
+    """
+    # TODO
+    return None
+    
 
 
-"""
-Test section
-"""
-print(df_in)
-print()
 
-# print(NullRowMaker(df_in, 1))
-# print(RandomNullMaker(df_in, 3))
-print(ExageratedValues(df_in, ['yy', 'C', 'A'], 2))
+
+if __name__ == "__main__":
+    """
+    This file contains function to add noise to pandas dataframe.
+    """
+
+    # load pandas dataframe from generated csv
+    # file_in = "./data_out/dogs_dataset.csv"
+    file_in = "./data_in/demo.csv" # file for testing
+    file_out = "./data_noisy/WTF.csv"
+
+
+    """
+    Test section
+    """
+    print(df_in)
+    print()
+
+    # print(NullRowMaker(df_in, 1))
+    # print(RandomNullMaker(df_in, 3))
+    print(ExageratedValues(df_in, ['yy', 'C', 'A'], 2))
+
+
+
+
+
+
 
 
 

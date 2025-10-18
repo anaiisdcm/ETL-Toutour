@@ -26,7 +26,7 @@ LOAD_ORDER = [
     ("owner_payments", "df_OwnerPayment.csv"),
 ]
 
-DATA_DIR = "./DataGeneration/data_out"
+DATA_DIR = "./data_out"
 
 def load_table(table_name, csv_file):
     csv_path = os.path.join(DATA_DIR, csv_file)
