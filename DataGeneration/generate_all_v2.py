@@ -77,7 +77,7 @@ if dog :
     weight = df_quaggle_dog['Weight (kg)']
     breed = df_quaggle_dog['Breed']
     picture = ["/pictures/dogs/" + idd for idd in dog_id]
-    birthdate = 2025 - np.round(df_quaggle_dog['Age (Years)'])
+    birth_date = 2025 - np.round(df_quaggle_dog['Age (Years)'])
     optimal_tour_duration = np.floor( (weight + (nrd.rand(n_dog)+1)*weight/2)/3 )
     athleticism = nrd.randint(0, 10, size=n_dog)
     
