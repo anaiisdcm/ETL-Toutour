@@ -79,6 +79,9 @@ def clean_owner(owners):
         (df['email'].str.count('@') == 1) &
         (df['email'].str.contains('.', na=False)) &
         (df['email'].str.split('@').str[0].str.count('.') >= 1)
+        (df['email'].str.count('@') == 1) &
+        (df['email'].str.contains('.', na=False)) &
+        (df['email'].str.split('@').str[0].str.count('.') >= 1)
     ]
    
     # Remove owners with invalid phone number
@@ -378,4 +381,24 @@ def clean_owner_payments(owner_payments):
     
     return df
 
+def clean_csv(path_csv, cleaning_function):
+    df_to_clean = pd.read_csv(path_csv)
+    df_cleaned = cleaning_function(df_to_clean)
+    df_cleaned.to_csv(path_csv)
+    return None
 
+
+def clean_all():
+    clean_csv("./data_out/df_Dog.csv", clean_dog)
+    clean_csv("./data_out/df_Owner.csv", clean_proprietaire)
+    clean_csv("./data_out/df_Walker.csv", clean_promeneur)
+    clean_csv("./data_out/df_WalkerAvailability.csv", clean_promeneur_dispo)
+    clean_csv("./data_out/df_WalksRequets.csv", clean_promenades_requests)
+    clean_csv("./data_out/df_past_walks.csv", clean_promenades_passees)
+    clean_csv("./data_out/df_WalkerReview.csv", clean_note_promeneur)
+    clean_csv("./data_out/df_DogReview.csv", clean_note_chien)
+    clean_csv("./data_out/df_OwnerPayment.csv", clean_paiements_proprietaires)
+
+
+if __name__ == "__main__":
+    clean_all()

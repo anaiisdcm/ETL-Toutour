@@ -40,8 +40,8 @@ dist/
 
 # --- Notebooks / données temporaires ---
 .ipynb_checkpoints/
-data/
-*.csv
+data_out/*.csv
+# *.csv
 *.xlsx
 *.json
 *.parquet

@@ -14,7 +14,7 @@ class Dog(Base):
     breed = Column(String(50))                                          # race du chien
     picture = Column(String(100))                                       # path vers la photo
     birth_date = Column(Date)                                           # date de naissance
-    optimal_walk_duration = Column(Integer)                             # durée promenade en minutes
+    optimal_tour_duration = Column(Integer)                             # durée promenade en minutes
     athleticism = Column(Integer)                                       # score de sportivité de 0 à 10
 
 
@@ -24,7 +24,7 @@ class Owner(Base):
     owner_id = Column(String(100), primary_key=True)                    # unique ID
     last_name = Column(String(100), nullable=False)                     # nom
     first_name = Column(String(100), nullable=False)                    # prénom
-    email = Column(String(150), unique=True, nullable=False)            # email
+    email = Column(String(150), nullable=False)            # email
     phone = Column(String(20))                                          # numéro de téléphone
     picture = Column(String(100))                                       # path vers la photo
     bio = Column(Text)                                                  # biographie / description
@@ -39,7 +39,7 @@ class Walker(Base):
     picture = Column(String(100))                                       # path vers la photo
     bio = Column(Text)                                                  # biographie / description
     verified_profile = Column(Boolean, default=False)                   # profil vérifié
-    email = Column(String(150), unique=True, nullable=False)            # mail
+    email = Column(String(150), nullable=False)            # mail
     phone = Column(String(20))                                          # numéro de téléphone
     birth_date = Column(Date)                                           # date de naissance
     rib = Column(String(34))                                            # numéro RIB (IBAN français)
@@ -61,7 +61,7 @@ class WalkerAvailability(Base):
 class WalkRequest(Base):
     __tablename__ = "walk_requests"
 
-    walk_request_id = Column(String(100), primary_key=True)  # identifiant unique de la demande
+    walk_id = Column(String(100), primary_key=True)  # identifiant unique de la demande
     dog_id = Column(String(100), ForeignKey("dogs.dog_id"), nullable=False)      # lien vers le chien
     address = Column(String(255), nullable=False)                             # adresse de la promenade
     ideal_start_datetime = Column(DateTime, nullable=False)                   # début idéal
@@ -84,7 +84,7 @@ class PastWalk(Base):
     distance = Column(Float)                                                     # distance parcourue (en km)
     start_datetime = Column(DateTime)                                           # début de la promenade
     end_datetime = Column(DateTime)                                             # fin de la promenade
-    photo = Column(String(100))                                       # path vers la photo
+    picture = Column(String(100))                                       # path vers la photo
     dog_review_id = Column(String(100), nullable=True)                               # avis du chien (facultatif)
     walker_review_id = Column(String(100), nullable=True)                            # avis du promeneur (facultatif)
 
