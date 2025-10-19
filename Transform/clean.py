@@ -7,28 +7,28 @@ import pandas as pd
 This file contains function to clean pandas dataframe
 """
 
-def clean_dog(df_dog):
+def clean_dog(dogs):
     """
     Clean and validate dog data
     
     Args:
-        df_dog (pandas.DataFrame): Raw dog data from CSV
+        dogs (pandas.DataFrame): Raw dog data from CSV
         
     Returns:
         pandas.DataFrame: Cleaned dog data
     """
-    if df_dog.empty:
+    if dogs.empty:
         print("⚠️  No dog data to clean")
-        return df_dog
+        return dogs
     
     print(f"🧹 Cleaning dog data...")
-    print(f"Starting with {len(df_dog)} dogs")
+    print(f"Starting with {len(dogs)} dogs")
     
     # Make a copy to avoid modifying the original
-    df = df_dog.copy()
+    df = dogs.copy()
 
     #Remove dogs with missing ID, name or owner ID.
-    df = df.dropna(subset=['id_dog','name','owner_ID'])
+    df = df.dropna(subset=['dog_id','name','owner_id'])
 
 
     # Remove dogs with invalid weight
@@ -38,50 +38,50 @@ def clean_dog(df_dog):
     
     # Remove dogs with invalid age
     # Weight cannot be older than 35 years old.
-    df = df.drop(df[(df['birthdate'] < 1990)].index)
+    df = df.drop(df[(df['birth_date'] < 1990)].index)
 
     # Remove dogs with invalid sportivity
     # Sportivity should be either 'Low', 'Medium' or 'High'.
-    df = df.drop(df[~(df['sportivity'].isin(['Low', 'Medium', 'High']))].index)
+    df = df.drop(df[~(df['athleticism'].isin(['Low', 'Medium', 'High']))].index)
 
     return df
 
 
-def clean_propriétaire(df_propriétaire):
+def clean_owner(owners):
     """
-    Clean and validate propriétaires data
+    Clean and validate owners data
     
     Args:
-        df_propriétaire (pandas.DataFrame): Raw propriétaires data from CSV
+        owners (pandas.DataFrame): Raw owners data from CSV
         
     Returns:
-        pandas.DataFrame: Cleaned propriétaires data
+        pandas.DataFrame: Cleaned owners data
     """
-    if df_propriétaire.empty:
-        print("⚠️  No propriétaires data to clean")
-        return df_propriétaire
+    if owners.empty:
+        print("⚠️  No owners data to clean")
+        return owners
     
-    print(f"🧹 Cleaning propriétaires data...")
-    print(f"Starting with {len(df_propriétaire)} propriétaires")
+    print(f"🧹 Cleaning owners data...")
+    print(f"Starting with {len(owners)} owners")
     
     # Make a copy to avoid modifying the original
-    df = df_propriétaire.copy()
+    df = owners.copy()
 
-    #Remove propriétaires with missing ID or name
-    df = df.dropna(subset=['id_propriétaire','nom'])
+    #Remove owners with missing ID or name
+    df = df.dropna(subset=['owner_id','last_name'])
 
-    #Remove propriétaires with missing mail and phone number
-    df = df.dropna(subset=['mail','phone'], how='all')
+    #Remove owners with missing mail and phone number
+    df = df.dropna(subset=['email','phone'], how='all')
 
-    # Remove propriétaires with invalid e-mail
+    # Remove owners with invalid e-mail
     # Keep only emails that contain exactly one '@' and at least one '.' before the '@'
     df = df[
-        (df['mail'].str.count('@') == 1) &
-        (df['mail'].str.contains('.', na=False)) &
-        (df['mail'].str.split('@').str[0].str.count('.') >= 1)
+        (df['email'].str.count('@') == 1) &
+        (df['email'].str.contains('.', na=False)) &
+        (df['email'].str.split('@').str[0].str.count('.') >= 1)
     ]
    
-    # Remove propriétaires with invalid phone number
+    # Remove owners with invalid phone number
     # Phone number has to have 10 digits, and start with 06 or 07
     df = df[
         (df['phone'].str.isdigit()) &
@@ -91,41 +91,41 @@ def clean_propriétaire(df_propriétaire):
 
     return df
 
-def clean_promeneur(df_promeneur):
+def clean_walker(walkers):
     """
-    Clean and validate promeneurs data
+    Clean and validate walkers data
     
     Args:
-        df_promeneur (pandas.DataFrame): Raw promeneurs data from CSV
+        walkers (pandas.DataFrame): Raw walkers data from CSV
         
     Returns:
-        pandas.DataFrame: Cleaned promeneurs data
+        pandas.DataFrame: Cleaned walkers data
     """
-    if df_promeneur.empty:
-        print("⚠️  No promeneurs data to clean")
-        return df_promeneur
+    if walkers.empty:
+        print("⚠️  No walkers data to clean")
+        return walkers
     
-    print(f"🧹 Cleaning promeneurs data...")
-    print(f"Starting with {len(df_promeneur)} promeneurs")
+    print(f"🧹 Cleaning walkers data...")
+    print(f"Starting with {len(walkers)} walkers")
     
     # Make a copy to avoid modifying the original
-    df = df_promeneur.copy()
+    df = walkers.copy()
 
-    #Remove promeneurs with missing ID or name
-    df = df.dropna(subset=['id_promeneur','nom'])
+    #Remove walkers with missing ID or name
+    df = df.dropna(subset=['walker_id','last_name'])
 
-    #Remove promeneurs with missing mail and phone number
-    df = df.dropna(subset=['mail','phone'], how='all')
+    #Remove walkers with missing mail and phone number
+    df = df.dropna(subset=['email','phone'], how='all')
 
-    # Remove promeneurs with invalid e-mail
+    # Remove walkers with invalid e-mail
     # Keep only emails that contain exactly one '@' and at least one '.' before the '@'
     df = df[
-        (df['mail'].str.count('@') == 1) &
-        (df['mail'].str.contains('.', na=False)) &
-        (df['mail'].str.split('@').str[0].str.count('.') >= 1)
+        (df['email'].str.count('@') == 1) &
+        (df['email'].str.contains('.', na=False)) &
+        (df['email'].str.split('@').str[0].str.count('.') >= 1)
     ]
    
-    # Remove promeneurs with invalid phone number
+    # Remove walkers with invalid phone number
     # Phone number has to have 10 digits, and start with 06 or 07
     df = df[
         (df['phone'].str.isdigit()) &
@@ -133,11 +133,11 @@ def clean_promeneur(df_promeneur):
         (df['phone'].str.startswith(('06', '07')))
     ]
 
-    # Remove promeneurs with invalid age
-    # Promeneur has to be born between 1965 and 2005
-    df = df.drop(df[(df['date_naissance'] <= 1965) | (df['date_naissance'] >= 2005)].index)
+    # Remove walkers with invalid age
+    # walker has to be born between 1965 and 2005
+    df = df.drop(df[(df['birth_date'] <= 1965) | (df['birth_date'] >= 2005)].index)
 
-    # Remove promeneurs with invalid RIB
+    # Remove walkers with invalid RIB
     # RIB has to have 27 digits, and start with FR76.
     df = df[
         (df['rib'].str[:4].str.isdigit()) &
@@ -147,82 +147,82 @@ def clean_promeneur(df_promeneur):
 
     return df
 
-def clean_promeneur_dispo(df_promeneur_dispo):
+def clean_walker_availability(walker_availabilities):
     """
-    Clean and validate promeneurs availability data
+    Clean and validate walkers availability data
     
     Args:
-        df_promeneur_dispo (pandas.DataFrame): Raw promeneurs availability data from CSV
+        walker_availabilities (pandas.DataFrame): Raw walkers availability data from CSV
         
     Returns:
-        pandas.DataFrame: Cleaned promeneurs availability data
+        pandas.DataFrame: Cleaned walkers availability data
     """
-    if df_promeneur_dispo.empty:
-        print("⚠️  No promeneurs availability data to clean")
-        return df_promeneur_dispo
+    if walker_availabilities.empty:
+        print("⚠️  No walkers availability data to clean")
+        return walker_availabilities
     
-    print(f"🧹 Cleaning promeneurs availability data...")
-    print(f"Starting with {len(df_promeneur_dispo)} promeneurs available")
+    print(f"🧹 Cleaning walkers availability data...")
+    print(f"Starting with {len(walker_availabilities)} walkers available")
     
     # Make a copy to avoid modifying the original
-    df = df_promeneur_dispo.copy()
+    df = walker_availabilities.copy()
 
-    #Remove availabilities with missing promeneur ID or adresse
-    df = df.dropna(subset=['id_promeneur','adresse'])
+    #Remove availabilities with missing walker ID or adresse
+    df = df.dropna(subset=['walker_id','address'])
 
     #Try to convert availabilities where the starting and ending time are not on good format to a timestamp
-    df["horodate_debut_disponibilite"] = pd.to_datetime(
-        df["horodate_debut_disponibilite"], errors="coerce"
+    df["start_datetime"] = pd.to_datetime(
+        df["start_datetime"], errors="coerce"
     )
-    df["horodate_fin_disponibilite"] = pd.to_datetime(
-        df["horodate_fin_disponibilite"], errors="coerce"
+    df["end_datetime"] = pd.to_datetime(
+        df["end_datetime"], errors="coerce"
     )
 
     # Remove rows where conversion was unsuccessful
-    df = df.dropna(subset=["horodate_debut_disponibilite"])
-    df = df.dropna(subset=["horodate_fin_disponibilite"])
+    df = df.dropna(subset=["start_datetime"])
+    df = df.dropna(subset=["end_datetime"])
 
     #Remove availabilities where starting time is after ending time
     df = df[
-        (df['horodate_debut_disponibilite'] < df['horodate_fin_disponibilite'])
+        (df['start_datetime'] < df['end_datetime'])
     ]
 
     return df
 
-def clean_promenades_requests(df_promenades_requests):
+def clean_walk_requests(walk_requests):
     """
-    Clean and validate promenades requests data
+    Clean and validate walks requests data
     
     Args:
-        df_promenades_requests (pandas.DataFrame): Raw promenades requests  data from CSV
+        walk_requests (pandas.DataFrame): Raw walks requests  data from CSV
         
     Returns:
-        pandas.DataFrame: Cleaned promenades requests data
+        pandas.DataFrame: Cleaned walks requests data
     """
-    if df_promenades_requests.empty:
-        print("⚠️  No promenades requests data to clean")
-        return df_promenades_requests
+    if walk_requests.empty:
+        print("⚠️  No walks requests data to clean")
+        return walk_requests
     
-    print(f"🧹 Cleaning promenades requests data...")
-    print(f"Starting with {len(df_promenades_requests)} promenades requests")
+    print(f"🧹 Cleaning walks requests data...")
+    print(f"Starting with {len(walk_requests)} walks requests")
     
     # Make a copy to avoid modifying the original
-    df = df_promenades_requests.copy()
+    df = walk_requests.copy()
 
-    #Remove availabilities with missing dog ID or promenade ID
-    df = df.dropna(subset=['id_chien','id_promenade'])
+    #Remove availabilities with missing dog ID or walk ID
+    df = df.dropna(subset=['dog_id','walk_request_id'])
 
     #Try to convert availabilities where the starting time are not on good format to a timestamp
-    df["horodate_debut_ideal"] = pd.to_datetime(
-        df["horodate_debut_ideal"], errors="coerce"
+    df["ideal_start_datetime"] = pd.to_datetime(
+        df["ideal_start_datetime"], errors="coerce"
     )
     
     # Remove rows where conversion was unsuccessful
-    df = df.dropna(subset=["horodate_debut_ideal"])
+    df = df.dropna(subset=["ideal_start_datetime"])
 
-    #Remove availabilities where duree is not a digit
+    #Remove availabilities where duration is not a digit
     df = df[
-        (df['duree_request'].str.isdigit())
+        (df['duration_request'].str.isdigit())
     ]
 
     #Remove availabilities where distance is not a digit
@@ -232,150 +232,149 @@ def clean_promenades_requests(df_promenades_requests):
     
     return df
 
-def clean_promenades_passées(df_promenades_passées):
+def clean_past_walks(past_walks):
     """
-    Clean and validate promenades passées data
+    Clean and validate past walks data
     
     Args:
-        df_promenades_passées (pandas.DataFrame): Raw promenades passées data from CSV
+        past_walks (pandas.DataFrame): Raw past walks data from CSV
         
     Returns:
-        pandas.DataFrame: Cleaned promenades passées data
+        pandas.DataFrame: Cleaned past walks data
     """
-    if df_promenades_passées.empty:
-        print("⚠️  No promenades passées data to clean")
-        return df_promenades_passées
+    if past_walks.empty:
+        print("⚠️  No past walks data to clean")
+        return past_walks
     
-    print(f"🧹 Cleaning promenades passées data...")
-    print(f"Starting with {len(df_promenades_passées)} promenades passées")
+    print(f"🧹 Cleaning past walks data...")
+    print(f"Starting with {len(past_walks)} past walks")
     
     # Make a copy to avoid modifying the original
-    df = df_promenades_passées.copy()
+    df = past_walks.copy()
 
-    #Remove promenades passées with missing promenade ID, promeneur ID or dog ID
-    df = df.dropna(subset=['id_promenade','id_promeneur','id_chien'])
+    #Remove past walks with missing walk ID, walker ID or dog ID
+    df = df.dropna(subset=['walk_id','walker_id','dog_id'])
 
-    #Try to convert promenades passées where the starting and ending time are not on good format to a timestamp
-    df["horodate_debut"] = pd.to_datetime(
-        df["horodate_debut"], errors="coerce"
+    #Try to convert walks passées where the starting and ending time are not on good format to a timestamp
+    df["start_datetime"] = pd.to_datetime(
+        df["start_datetime"], errors="coerce"
     )
-    df["horodate_fin"] = pd.to_datetime(
-        df["horodate_fin"], errors="coerce"
+    df["end_datetime"] = pd.to_datetime(
+        df["end_datetime"], errors="coerce"
     )
 
     # Remove rows where conversion was unsuccessful
-    df = df.dropna(subset=["horodate_debut"])
-    df = df.dropna(subset=["horodate_fin"])
+    df = df.dropna(subset=["start_datetime"])
+    df = df.dropna(subset=["end_datetime"])
 
-    #Remove promenades where starting time is after ending time
+    #Remove walks where starting time is after ending time
     df = df[
-        (df['horodate_debut'] < df['horodate_fin'])
+        (df['start_datetime'] < df['end_datetime'])
     ]
 
-    #Remove promenades where distance is not a digit
-    df = df[
-        (df['distance'].str.isdigit())
-    ]
+    #Remove walks where distance is not a number
+    df = df[pd.to_numeric(df['distance'], errors='coerce').notna()]
+
 
     return df
 
-def clean_note_promeneur(df_notes_promeneurs):
+def clean_walker_review(walker_reviews):
     """
-    Clean and validate notes promeneurs data
+    Clean and validate walker reviews data
     
     Args:
-        df_notes_promeneurs (pandas.DataFrame): Raw notes promeneurs data from CSV
+        walker_reviews (pandas.DataFrame): Raw walker reviews data from CSV
         
     Returns:
-        pandas.DataFrame: Cleaned notes promeneurs data
+        pandas.DataFrame: Cleaned walker reviews data
     """
-    if df_notes_promeneurs.empty:
-        print("⚠️  No notes promeneurs data to clean")
-        return df_notes_promeneurs
+    if walker_reviews.empty:
+        print("⚠️  No walker reviews data to clean")
+        return walker_reviews
     
-    print(f"🧹 Cleaning notes promeneurs data...")
-    print(f"Starting with {len(df_notes_promeneurs)} notes promeneurs")
+    print(f"🧹 Cleaning walker reviews data...")
+    print(f"Starting with {len(walker_reviews)} walker reviews")
     
     # Make a copy to avoid modifying the original
-    df = df_notes_promeneurs.copy()
+    df = walker_reviews.copy()
 
-    #Remove notes promeneurs with missing promenade ID, promeneur ID or note
-    df = df.dropna(subset=['id_promenade','id_promeneur','note'])
+    #Remove walker reviews with missing review ID, walk ID, walker ID or rating
+    df = df.dropna(subset=['review_id', 'walk_id','walker_id','rating'])
 
-    #Keep notes where note is an integer between 1 and 5
-    df = df[df['note'].between(1, 5)]
+    #Keep ratings where rating is an integer between 1 and 5
+    df = df[df['rating'].between(1, 5)]
 
     return df 
 
-def clean_note_chien(df_notes_chien):
+def clean_dog_review(dog_reviews):
     """
-    Clean and validate notes chien data
+    Clean and validate dog reviews data
     
     Args:
-        df_notes_chien (pandas.DataFrame): Raw notes chien data from CSV
+        dog_reviews (pandas.DataFrame): Raw dog reviews data from CSV
         
     Returns:
-        pandas.DataFrame: Cleaned notes chien data
+        pandas.DataFrame: Cleaned dog reviews data
     """
-    if df_notes_chien.empty:
-        print("⚠️  No notes chien data to clean")
-        return df_notes_chien
+    if dog_reviews.empty:
+        print("⚠️  No dog reviews data to clean")
+        return dog_reviews
     
-    print(f"🧹 Cleaning notes chien data...")
-    print(f"Starting with {len(df_notes_chien)} notes chien")
+    print(f"🧹 Cleaning dog reviews data...")
+    print(f"Starting with {len(dog_reviews)} dog reviews")
     
     # Make a copy to avoid modifying the original
-    df = df_notes_chien.copy()
+    df = dog_reviews.copy()
 
-    #Remove notes chien with missing promenade ID, dog ID or note
-    df = df.dropna(subset=['id_promenade','id_chien','note'])
+    #Remove dog reviews with missing review ID, walk ID, dog ID or rating
+    df = df.dropna(subset=['review_id','walk_id','dog_id','rating'])
 
-    #Keep notes where note is an integer between 1 and 5
-    df = df[df['note'].between(1, 5)]
+    #Keep ratings where rating is an integer between 1 and 5
+    df = df[df['rating'].between(1, 5)]
 
     return df 
 
-def clean_paiements_propriétaires(df_paiements_propriétaires):
+def clean_owner_payments(owner_payments):
     """
-    Clean and validate paiements propriétaires data
+    Clean and validate owner payments data
     
     Args:
-        df_paiements_propriétaires (pandas.DataFrame): Raw paiements propriétaires  data from CSV
+        owner_payments (pandas.DataFrame): Raw owner payments  data from CSV
         
     Returns:
-        pandas.DataFrame: Cleaned paiements propriétaires data
+        pandas.DataFrame: Cleaned owner payments data
     """
-    if df_paiements_propriétaires.empty:
-        print("⚠️  No paiements propriétaires data to clean")
-        return df_paiements_propriétaires
+    if owner_payments.empty:
+        print("⚠️  No owner payments data to clean")
+        return owner_payments
     
-    print(f"🧹 Cleaning paiements propriétaires data...")
-    print(f"Starting with {len(df_paiements_propriétaires)} paiements propriétaires")
+    print(f"🧹 Cleaning owner payments data...")
+    print(f"Starting with {len(owner_payments)} owner payments")
     
     # Make a copy to avoid modifying the original
-    df = df_paiements_propriétaires.copy()
+    df = owner_payments.copy()
 
-    #Remove paiements  with missing promenade ID or montant
-    df = df.dropna(subset=['montant','id_promenade'])
+    #Remove paiements  with missing payment ID, walk ID or amount
+    df = df.dropna(subset=['payment_id','amount','walk_id'])
 
     #Try to convert times where the payment time is not on good format to a timestamp
-    df["horodate_paiement"] = pd.to_datetime(
-        df["horodate_paiement"], errors="coerce"
+    df["payment_datetime"] = pd.to_datetime(
+        df["payment_datetime"], errors="coerce"
     )
     
     # Remove rows where conversion was unsuccessful
-    df = df.dropna(subset=["horodate_paiement"])
+    df = df.dropna(subset=["payment_datetime"])
 
-    #Keep payments where montant is an integer between 5 and 40
-    df = df[df['montant'].between(5,40)]
+    #Keep payments where amount is an integer between 5 and 40
+    df = df[df['amount'].between(5,40)]
 
-    # Remove payments with invalid moyen
-    # Moyen should be either 'CB', 'Paypal' or 'Virement'.
-    df = df.drop(df[~(df['moyen_paiement'].isin(['CB', 'Paypal', 'Virement']))].index)
+    # Remove payments with invalid method
+    # Method should be either 'CB', 'Paypal' or 'Virement'.
+    df = df.drop(df[~(df['payment_method'].isin(['CB', 'Paypal', 'Virement']))].index)
 
     # Remove payments with invalid status
     # Status should be either 'Payé', 'En attente' or 'Échoué'.
-    df = df.drop(df[~(df['statut_paiement'].isin(['Payé', 'En attente', 'Échoué']))].index)
+    df = df.drop(df[~(df['payment_status'].isin(['Payé', 'En attente', 'Échoué']))].index)
     
     return df
 
