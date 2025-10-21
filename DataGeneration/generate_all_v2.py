@@ -239,7 +239,7 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     # --- Walker Reviews
     if walker_review:
-        comments = [f"What a {rd.choices(["wonderful", "horrible", "tremendous", "idiotic", "fascinating"])[0]} dog ! I was {rd.choices(["terrified", "super happy"])[0]} to walk it." for wid in df_past_walks['walk_id']]
+        comments = [f"""What a {rd.choices(["wonderful", "horrible", "tremendous", "idiotic", "fascinating"])[0]} dog ! I was {rd.choices(["terrified", "super happy"])[0]} to walk it.""" for wid in df_past_walks['walk_id']]
         df_walker_review = pd.DataFrame({
             'review_id': [wid + "_walkerreview" for wid in df_past_walks['walk_id']],
             'walk_id': df_past_walks['walk_id'],
@@ -251,7 +251,7 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     # --- Dog Reviews
     if dog_review:
-        comments = [f"What a {rd.choices(["masterclassic", "superb", "tremendous", "terrible", "mysterious"])[0]} Toutour my dog had ! The walker was the most {rd.choices(["awfulest", "nice", "wonderful", "dumb", "kind"])[0]} person I ever met" for wid in df_past_walks['walk_id']]
+        comments = [f"""What a {rd.choices(["masterclassic", "superb", "tremendous", "terrible", "mysterious"])[0]} Toutour my dog had ! The walker was the most {rd.choices(["awfulest", "nice", "wonderful", "dumb", "kind"])[0]} person I ever met""" for wid in df_past_walks['walk_id']]
 
         df_dog_review = pd.DataFrame({
             'review_id': [wid + "_dogreview" for wid in df_past_walks['walk_id']],
