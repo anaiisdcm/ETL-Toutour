@@ -11,7 +11,7 @@ DATABASE_URL = "postgresql+psycopg2://usertoutour:mdp@localhost:5432/toutourBase
 #\du --pour vérifier les droits des utilisateurs postgres (SQL)
 # Et activer postgresql avec :
 # sudo service postgresql start
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=False)
 SessionLocal = sessionmaker(bind=engine)
 
 Base = declarative_base()

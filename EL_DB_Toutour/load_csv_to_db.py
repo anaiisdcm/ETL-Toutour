@@ -47,7 +47,7 @@ def load_table(table_name, csv_file):
         for start in range(0, len(df), 100):
             chunk = df.iloc[start:start+100]
             chunk.to_sql(table_name, engine, if_exists="append", index=False)
-            print(f"   → {table_name}: lignes {start}-{start+len(chunk)-1} insérées")
+            #print(f"   → {table_name}: lignes {start}-{start+len(chunk)-1} insérées")
 
         print(f"✅ Table {table_name} remplie ({len(df)} lignes)")
         return True
