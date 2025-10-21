@@ -5,8 +5,8 @@ import random as rd
 import string
 
 
-def init_values(n_total_past_walk = 1000,
-                n_total_dog = 100,
+def init_values(n_total_past_walk = 2000,
+                n_total_dog = 200,
                 n_total_owner = 50,
                 n_total_walker = 50,
                 n_total_availability = 100,

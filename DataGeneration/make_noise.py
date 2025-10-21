@@ -44,9 +44,9 @@ Ags :
 """
 def RandomNullMaker(df, n_nulls):
     r, c = df.shape
-    if n_nulls >= r*c/5 :
+    if n_nulls >= r*c/3 :
         print(f"Asking to nullify {n_nulls} elements in dataframe ({r}x{c}) that contains only {r*c}. Not doing it")
-        n_nulls = r*c//5
+        n_nulls = r*c//3
     
     # choose rows and columns randomly
     r_to_null = rd.randint(0, r-1, n_nulls)
@@ -95,7 +95,7 @@ def make_noise(pc_null=20, pc_nullrows=5, pc_exagerated=10, directory_out="./dat
                     "Dog":["weight", "optimal_tour_duration", "athleticism"]}
 
     for e in to_nullify :
-        df = pd.read_csv("./data_out/df_"+e+".csv")
+        df = pd.read_csv("./data_out/df_"+e+".csv", dtype={'phone':str})
         r, c = df.shape
         # nullify elements
         n_nulls = round(( r*c * pc_null) / 100)
@@ -105,15 +105,19 @@ def make_noise(pc_null=20, pc_nullrows=5, pc_exagerated=10, directory_out="./dat
         df = NullRowMaker(df, n_rows)
         # save to csv
         df.to_csv(f"{directory_out}/df_{e}.csv", index=False)
+        df.to_csv(f"./df_{e}.csv", index=False)
+        print(f"removing {n_nulls} values and {n_rows} in dataframe {e}")
 
     for e in to_exagerate :
-        df = pd.read_csv("./data_out/df_"+e+".csv")
+        df = pd.read_csv("./data_out/df_"+e+".csv", dtype={'phone':str})
         r, c = df.shape
         # nullify elements
         n_faked_c = round(( r * pc_exagerated) / 100)
         ExageratedValues(df, columns=to_exagerate[e], n_faked_c=n_faked_c)
-        # save to csv
+        # save to csv      
         df.to_csv(f"{directory_out}/df_{e}.csv", index=False)
+        print(f"modifying {n_faked_c} values in dataframe {e}, column {to_exagerate[e]}")
+    
     return None
     
 
