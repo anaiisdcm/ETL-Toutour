@@ -9,10 +9,10 @@ This file contains function to add noise to pandas dataframe.
 
 # load pandas dataframe from generated csv
 # file_in = "./data_out/dogs_dataset.csv"
-file_in = "./data_in/demo.csv" # file for testing
-file_out = "./data_noisy/WTF.csv"
+# file_in = "./data_in/demo.csv" # file for testing
+# file_out = "./data_noisy/WTF.csv"
 
-df_in = pd.read_csv(file_in)
+# df_in = pd.read_csv(file_in)
 
 
 
@@ -85,11 +85,35 @@ def ExageratedValues(df, columns, n_faked_c):
     return df
         
         
-def make_noise():
+def make_noise(pc_null=20, pc_nullrows=5, pc_exagerated=10):
     """
     Add noise (all kind) to automatically generated data
     """
-    # TODO
+    to_nullify = ["Owner", ]
+    to_exagerate = {"OwnerPayment":["amount"],
+                    "past_walks":["distance"],
+                    "Dog":["weight", "optimal_tour_duration", "athleticism"]}
+
+    for e in to_nullify :
+        df = pd.read_csv("./data_out/df_"+e+".csv")
+        r, c = df.shape
+        # nullify elements
+        n_nulls = round(( r*c * pc_null) / 100)
+        df = RandomNullMaker(df, n_nulls=n_nulls)
+        # nullify rows
+        n_rows = round(( r * pc_nullrows) / 100)
+        df = NullRowMaker(df, n_rows)
+        # save to csv
+        df.to_csv(f"./data_noisy/df_noisy_{e}.csv", index=False)
+
+    for e in to_exagerate :
+        df = pd.read_csv("./data_out/df_"+e+".csv")
+        r, c = df.shape
+        # nullify elements
+        n_faked_c = round(( r * pc_exagerated) / 100)
+        ExageratedValues(df, columns=to_exagerate[e], n_faked_c=n_faked_c)
+        # save to csv
+        df.to_csv(f"./data_noisy/df_noisy_{e}.csv", index=False)
     return None
     
 
@@ -97,26 +121,7 @@ def make_noise():
 
 
 if __name__ == "__main__":
-    """
-    This file contains function to add noise to pandas dataframe.
-    """
-
-    # load pandas dataframe from generated csv
-    # file_in = "./data_out/dogs_dataset.csv"
-    file_in = "./data_in/demo.csv" # file for testing
-    file_out = "./data_noisy/WTF.csv"
-
-
-    """
-    Test section
-    """
-    print(df_in)
-    print()
-
-    # print(NullRowMaker(df_in, 1))
-    # print(RandomNullMaker(df_in, 3))
-    print(ExageratedValues(df_in, ['yy', 'C', 'A'], 2))
-
+    make_noise(pc_null, pc_nullrows, pc_exagerated)
 
 
 

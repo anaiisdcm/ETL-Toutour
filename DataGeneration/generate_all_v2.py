@@ -22,6 +22,23 @@ def init_values(n_total_past_walk = 1000,
     return n_total_past_walk, n_total_dog, n_total_owner, n_total_walker, n_total_availability, n_total_request
 
 
+# random dates generation
+def random_dates(start, end, n):
+    start_u = start.value//10**9
+    end_u = end.value//10**9
+    return pd.to_datetime(np.random.randint(start_u, end_u, n), unit='s')
+
+def random_birthdates(mean_year, std_years, n):
+    mean_date = pd.to_datetime(f"{mean_year}-1-1")
+    days = np.round(nrd.normal(0, std_years * 365, n))
+    # Convert to dates
+    birth_dates = [mean_date + pd.to_timedelta(d, unit="h") for d in days]
+    # Convert to pandas Series
+    birth_dates_series = pd.Series(birth_dates)
+    return birth_dates_series
+
+
+
 def generate_all_csv(dog = True, owner = True, walker = True, walker_availability = True, past_walks = True, walker_review = True, owner_payment = True, walk_requests = True, dog_review = True):
     # for reproductibility
     nrd.seed(33)
@@ -200,7 +217,10 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
         dog_id = rd.choices(df_dog['dog_id'], k=n_walk) 
         walker_id = rd.choices(df_walker['walker_id'], k=n_walk)
         distance = nrd.randint(1, 15, n_walk)
-        start_datetime = pd.date_range(start="2025-09-01", periods=n_walk, freq="h").tolist()
+
+
+        start_datetime = random_dates(start=pd.to_datetime('2024-01-01'), end=pd.to_datetime('2025-10-01'), n=n_walk)
+        #start_datetime = pd.date_range(start="2025-09-01", periods=n_walk, freq="h").tolist()
         end_datetime = pd.date_range(start="2025-09-02", periods=n_walk, freq="h").tolist()
 
         walk_id = [dog_id[i] + '-' + walker_id[i] + str(start_datetime[i]) for i in range(n_walk)]
@@ -228,7 +248,7 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     # --- Walker Reviews
     if walker_review:
-        comments = [f"What a {rd.choices(["wonderful", "horrible", "tremendous", "idiotic", "fascinating"])[0]} dog ! I was {rd.choices(["terrified", "super happy"])[0]} to walk it." for wid in df_past_walks['walk_id']]
+        comments = [f"""What a {rd.choices(["wonderful", "horrible", "tremendous", "idiotic", "fascinating"])[0]} dog ! I was {rd.choices(["terrified", "super happy"])[0]} to walk it.""" for wid in df_past_walks['walk_id']]
         df_walker_review = pd.DataFrame({
             'review_id': [wid + "_walkerreview" for wid in df_past_walks['walk_id']],
             'walk_id': df_past_walks['walk_id'],
@@ -240,7 +260,7 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     # --- Dog Reviews
     if dog_review:
-        comments = [f"What a {rd.choices(["masterclassic", "superb", "tremendous", "terrible", "mysterious"])[0]} Toutour my dog had ! The walker was the most {rd.choices(["awfulest", "nice", "wonderful", "dumb", "kind"])[0]} person I ever met" for wid in df_past_walks['walk_id']]
+        comments = [f"""What a {rd.choices(["masterclassic", "superb", "tremendous", "terrible", "mysterious"])[0]} Toutour my dog had ! The walker was the most {rd.choices(["awfulest", "nice", "wonderful", "dumb", "kind"])[0]} person I ever met""" for wid in df_past_walks['walk_id']]
 
         df_dog_review = pd.DataFrame({
             'review_id': [wid + "_dogreview" for wid in df_past_walks['walk_id']],
