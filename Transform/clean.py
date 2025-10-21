@@ -390,14 +390,14 @@ def clean_csv(path_csv, cleaning_function):
 
 def clean_all():
     clean_csv("./data_out/df_Dog.csv", clean_dog)
-    clean_csv("./data_out/df_Owner.csv", clean_proprietaire)
-    clean_csv("./data_out/df_Walker.csv", clean_promeneur)
-    clean_csv("./data_out/df_WalkerAvailability.csv", clean_promeneur_dispo)
-    clean_csv("./data_out/df_WalksRequets.csv", clean_promenades_requests)
-    clean_csv("./data_out/df_past_walks.csv", clean_promenades_passees)
-    clean_csv("./data_out/df_WalkerReview.csv", clean_note_promeneur)
-    clean_csv("./data_out/df_DogReview.csv", clean_note_chien)
-    clean_csv("./data_out/df_OwnerPayment.csv", clean_paiements_proprietaires)
+    clean_csv("./data_out/df_Owner.csv", clean_owner)
+    clean_csv("./data_out/df_Walker.csv", clean_walker)
+    clean_csv("./data_out/df_WalkerAvailability.csv", clean_walker_availability)
+    clean_csv("./data_out/df_WalksRequets.csv", clean_walk_requests)
+    clean_csv("./data_out/df_past_walks.csv", clean_past_walks)
+    clean_csv("./data_out/df_WalkerReview.csv", clean_walker_review)
+    clean_csv("./data_out/df_DogReview.csv", clean_dog_review)
+    clean_csv("./data_out/df_OwnerPayment.csv", clean_owner_payments)
 
 
 if __name__ == "__main__":
