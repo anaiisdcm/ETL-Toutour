@@ -9,7 +9,7 @@ def init_db():
     print(f"🖥️ Hôte : {engine.url.host}:{engine.url.port}")
     confirmation = input("👉 Es-tu sûr de vouloir continuer ? (tape 'Yes' pour confirmer) : ")
 
-    if confirmation != "Yes":
+    if confirmation.lower() != "yes":
         print("❌ Opération annulée.")
         return
 
