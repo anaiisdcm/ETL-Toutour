@@ -79,13 +79,11 @@ def clean_owner(owners):
         (df['email'].str.count('@') == 1) &
         (df['email'].str.contains('.', na=False)) &
         (df['email'].str.split('@').str[0].str.count('.') >= 1)
-        (df['email'].str.count('@') == 1) &
-        (df['email'].str.contains('.', na=False)) &
-        (df['email'].str.split('@').str[0].str.count('.') >= 1)
     ]
    
     # Remove owners with invalid phone number
     # Phone number has to have 10 digits, and start with 06 or 07
+    df['phone'] = df['phone'].astype(str)
     df = df[
         (df['phone'].str.isdigit()) &
         (df['phone'].str.len() == 10) &
@@ -130,6 +128,7 @@ def clean_walker(walkers):
    
     # Remove walkers with invalid phone number
     # Phone number has to have 10 digits, and start with 06 or 07
+    df['phone'] = df['phone'].astype(str)
     df = df[
         (df['phone'].str.isdigit()) &
         (df['phone'].str.len() == 10) &
@@ -213,7 +212,7 @@ def clean_walk_requests(walk_requests):
     df = walk_requests.copy()
 
     #Remove availabilities with missing dog ID or walk ID
-    df = df.dropna(subset=['dog_id','walk_request_id'])
+    df = df.dropna(subset=['dog_id','walk_id'])
 
     #Try to convert availabilities where the starting time are not on good format to a timestamp
     df["ideal_start_datetime"] = pd.to_datetime(
@@ -223,15 +222,12 @@ def clean_walk_requests(walk_requests):
     # Remove rows where conversion was unsuccessful
     df = df.dropna(subset=["ideal_start_datetime"])
 
-    #Remove availabilities where duration is not a digit
-    df = df[
-        (df['duration_request'].str.isdigit())
-    ]
+    #Remove availabilities where duration is not a int or a float
+    df = df[df['duration_request'].apply(lambda x: isinstance(x, (int, float)))]
 
-    #Remove availabilities where distance is not a digit
-    df = df[
-        (df['distance_request'].str.isdigit())
-    ]
+
+    #Remove availabilities where distance is not a int or a float
+    df = df[df['distance_request'].apply(lambda x: isinstance(x, (int, float)))]
     
     return df
 
@@ -393,7 +389,7 @@ def clean_all():
     clean_csv("./data_out/df_Owner.csv", clean_owner)
     clean_csv("./data_out/df_Walker.csv", clean_walker)
     clean_csv("./data_out/df_WalkerAvailability.csv", clean_walker_availability)
-    clean_csv("./data_out/df_WalksRequets.csv", clean_walk_requests)
+    clean_csv("./data_out/df_WalksRequests.csv", clean_walk_requests)
     clean_csv("./data_out/df_past_walks.csv", clean_past_walks)
     clean_csv("./data_out/df_WalkerReview.csv", clean_walker_review)
     clean_csv("./data_out/df_DogReview.csv", clean_dog_review)
