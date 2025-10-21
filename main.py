@@ -11,6 +11,7 @@ if __name__ == "__main__":
     time.sleep(2)
 
     print('Cleaning initial data ...')
+
     clean.clean_all()
     time.sleep(2)
 

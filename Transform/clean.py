@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.random as rd
 import pandas as pd
+import os
 
 
 """
@@ -40,10 +41,9 @@ def clean_dog(dogs):
     # Weight cannot be older than 35 years old.
     df = df.drop(df[(df['birth_date'] < 1990)].index)
 
-    # Remove dogs with invalid sportivity
-    # Sportivity should be either 'Low', 'Medium' or 'High'.
-    df = df.drop(df[~(df['athleticism'].isin(['Low', 'Medium', 'High']))].index)
-
+    # Remove dogs with invalid athleticism
+    # Athleticism should be an integer beetween 0 and 10:
+    df = df[df['athleticism'].between(0,10)]
     return df
 
 
@@ -76,10 +76,10 @@ def clean_owner(owners):
     # Remove owners with invalid e-mail
     # Keep only emails that contain exactly one '@' and at least one '.' before the '@'
     df = df[
-        (df['email'].str.count('@') == 1) &
-        (df['email'].str.contains('.', na=False)) &
-        (df['email'].str.split('@').str[0].str.count('.') >= 1)
-    ]
+         (df['email'].str.count('@') == 1) &
+         (df['email'].str.contains('.', na=False)) &
+         (df['email'].str.split('@').str[0].str.count('.') >= 1)
+     ]
    
     # Remove owners with invalid phone number
     # Phone number has to have 10 digits, and start with 06 or 07
@@ -137,12 +137,12 @@ def clean_walker(walkers):
 
     # Remove walkers with invalid age
     # walker has to be born between 1965 and 2005
-    df = df.drop(df[(df['birth_date'] <= 1965) | (df['birth_date'] >= 2005)].index)
+    df = df.drop(df[(np.floor(df['birth_date']) <= 1965) | (np.floor(df['birth_date']) >= 2005)].index)
 
     # Remove walkers with invalid RIB
     # RIB has to have 27 digits, and start with FR76.
     df = df[
-        (df['rib'].str[:4].str.isdigit()) &
+        (df['rib'].str[4:].str.isdigit()) &
         (df['rib'].str.len() == 27) &
         (df['rib'].str.startswith(('FR76')))
     ]
@@ -369,23 +369,26 @@ def clean_owner_payments(owner_payments):
 
     # Remove payments with invalid method
     # Method should be either 'CB', 'Paypal' or 'Virement'.
-    df = df.drop(df[~(df['payment_method'].isin(['CB', 'Paypal', 'Virement']))].index)
+    df = df.drop(df[~(df['payment_method'].isin(["DebitCard", "CreditCard"]))].index)
 
     # Remove payments with invalid status
     # Status should be either 'Payé', 'En attente' or 'Échoué'.
-    df = df.drop(df[~(df['payment_status'].isin(['Payé', 'En attente', 'Échoué']))].index)
+    df = df.drop(df[~(df['payment_status'].isin(["complete", "pending", "failed"]))].index)
     
     return df
 
 def clean_csv(path_csv, cleaning_function):
-    df_to_clean = pd.read_csv(path_csv)
+    csv_name = os.path.basename(path_csv)
+    df_to_clean = pd.read_csv(path_csv, dtype={'phone':str})
     df_cleaned = cleaning_function(df_to_clean)
     df_cleaned.to_csv(path_csv)
+    print(f"Final {csv_name} records: {len(df_cleaned)}")
     return None
 
 
 def clean_all():
     clean_csv("./data_out/df_Dog.csv", clean_dog)
+    
     clean_csv("./data_out/df_Owner.csv", clean_owner)
     clean_csv("./data_out/df_Walker.csv", clean_walker)
     clean_csv("./data_out/df_WalkerAvailability.csv", clean_walker_availability)
