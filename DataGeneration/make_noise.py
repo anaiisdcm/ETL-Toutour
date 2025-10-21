@@ -42,7 +42,7 @@ Ags :
     df : pandas dataframe to replace values by None
     n_nulls : total number of values to replace by None or Nan
 """
-def RandomNullMaker(df, n_nulls):
+def RandomNullMaker(df, n_nulls, except_cols=[]):
     r, c = df.shape
     if n_nulls >= r*c/3 :
         print(f"Asking to nullify {n_nulls} elements in dataframe ({r}x{c}) that contains only {r*c}. Not doing it")
@@ -53,7 +53,10 @@ def RandomNullMaker(df, n_nulls):
     c_to_null = rd.randint(0, c-1, n_nulls)        
     # nullify
     for i in range(n_nulls):
-        df.loc[ r_to_null[i] , df.columns.values[c_to_null[i]] ] = None
+        print(list(df.columns)[c_to_null[i]])
+        print(except_cols)
+        if not list(df.columns)[c_to_null[i]] in except_cols : 
+            df.loc[ r_to_null[i] , df.columns.values[c_to_null[i]] ] = None
     return df
     
 """
@@ -85,11 +88,12 @@ def ExageratedValues(df, columns, n_faked_c):
     return df
         
         
-def make_noise(pc_null=20, pc_nullrows=5, pc_exagerated=10, directory_out="./data_out"):
+def make_noise(pc_null=20, pc_nullrows=5, pc_exagerated=10, directory_out="./data_out", except_ids=True):
     """
     Add noise (all kind) to automatically generated data
     """
-    to_nullify = ["Owner", ]
+    # a few dataframe to edit
+    to_nullify = ["Owner"]#, "Dog", "Walker", "WalkerReview"]
     to_exagerate = {"OwnerPayment":["amount"],
                     "past_walks":["distance"],
                     "Dog":["weight", "optimal_tour_duration", "athleticism"]}
@@ -97,9 +101,12 @@ def make_noise(pc_null=20, pc_nullrows=5, pc_exagerated=10, directory_out="./dat
     for e in to_nullify :
         df = pd.read_csv("./data_out/df_"+e+".csv", dtype={'phone':str})
         r, c = df.shape
+        # do not nullify id (supposed impossible)
+        if except_ids :
+            except_cols = [col for col in df.columns if "id" in col or "last_name" in col]
         # nullify elements
         n_nulls = round(( r*c * pc_null) / 100)
-        df = RandomNullMaker(df, n_nulls=n_nulls)
+        df = RandomNullMaker(df, n_nulls=n_nulls, except_cols=except_cols)
         # nullify rows
         n_rows = round(( r * pc_nullrows) / 100)
         df = NullRowMaker(df, n_rows)
