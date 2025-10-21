@@ -28,6 +28,15 @@ def random_dates(start, end, n):
     end_u = end.value//10**9
     return pd.to_datetime(np.random.randint(start_u, end_u, n), unit='s')
 
+def random_birthdates(mean_year, std_years, n):
+    mean_date = pd.to_datetime(f"{mean_year}-1-1")
+    days = np.round(nrd.normal(0, std_years * 365, n))
+    # Convert to dates
+    birth_dates = [mean_date + pd.to_timedelta(d, unit="h") for d in days]
+    # Convert to pandas Series
+    birth_dates_series = pd.Series(birth_dates)
+    return birth_dates_series
+
 
 
 def generate_all_csv(dog = True, owner = True, walker = True, walker_availability = True, past_walks = True, walker_review = True, owner_payment = True, walk_requests = True, dog_review = True):
