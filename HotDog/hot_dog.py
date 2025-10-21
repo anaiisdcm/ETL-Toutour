@@ -5,20 +5,6 @@ import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from EL_DB_Toutour.database import engine, Base
 
-# # --- Données simulées ---
-# df_propriétaire = pd.read_csv('./data_test_hot_dog/df_proprietaire.csv', delimiter=';')
-
-# df_dog = pd.read_csv('./data_test_hot_dog/df_dog.csv', delimiter=';')
-
-# df_promenades_passees = pd.read_csv('./data_test_hot_dog/df_promenades_passees.csv', delimiter=';')
-
-# df_notes_chien = pd.read_csv('./data_test_hot_dog/df_notes_chien.csv', delimiter=';')
-
-# df_notes_promeneurs =  pd.read_csv('./data_test_hot_dog/df_notes_promeneurs.csv', delimiter=';')
-
-# df_promeneurs = pd.read_csv('./data_test_hot_dog/df_promeneurs.csv', delimiter=';')
-
-
 # --- Configuration de la page ---
 st.set_page_config(page_title="Hot dog", layout="wide")
 st.logo('./HotDog/toutour.png')
@@ -138,7 +124,7 @@ elif st.session_state.selected_dog:
         with col5:
             st.metric("Promenade la plus longue", f"{promenade_plus_longue['distance']:.1f} km ({promenade_plus_longue['start_datetime'].strftime('%d/%m')})")
         with col6:
-            st.metric(f"Promenade préférée de {df_dog_name['name'].iat[0]}", f"{promenade_pref_review['rating']} ⭐ ({promenade_pref['start_datetime']}")#.strftime('%d/%m')})")
+            st.metric(f"Promenade préférée de {df_dog_name['name'].iat[0]}", f"{float(promenade_pref_review['rating'].iat[0])} ⭐ ({promenade_pref['start_datetime'].iat[0].strftime('%d/%m')})")#.strftime('%d/%m')})")
 
         # -----------------------------
         # COMMENTAIRES POSITIFS
