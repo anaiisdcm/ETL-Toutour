@@ -23,8 +23,8 @@ class Owner(Base):
 
     owner_id = Column(String(100), primary_key=True)                    # unique ID
     last_name = Column(String(100), nullable=False)                     # nom
-    first_name = Column(String(100), nullable=False)                    # prénom
-    email = Column(String(150), nullable=False)            # email
+    first_name = Column(String(100))                                    # prénom
+    email = Column(String(150))                                         # email
     phone = Column(String(20))                                          # numéro de téléphone
     picture = Column(String(100))                                       # path vers la photo
     bio = Column(Text)                                                  # biographie / description
@@ -35,11 +35,11 @@ class Walker(Base):
 
     walker_id = Column(String(100), primary_key=True)                   # identifiant unique
     last_name = Column(String(100), nullable=False)                     # nom
-    first_name = Column(String(100), nullable=False)                    # prénom
+    first_name = Column(String(100))                                    # prénom
     picture = Column(String(100))                                       # path vers la photo
     bio = Column(Text)                                                  # biographie / description
     verified_profile = Column(Boolean, default=False)                   # profil vérifié
-    email = Column(String(150), nullable=False)            # mail
+    email = Column(String(150))                                         # mail
     phone = Column(String(20))                                          # numéro de téléphone
     birth_date = Column(Date)                                           # date de naissance
     rib = Column(String(34))                                            # numéro RIB (IBAN français)
