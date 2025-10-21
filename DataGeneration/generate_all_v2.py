@@ -5,14 +5,30 @@ import random as rd
 import string
 
 
+def init_values():
+    """
+    Numbers numbers
+    """
+    n_total_past_walk = 1000
+    n_total_dog = 100
+    n_total_owner = 50
+    n_total_walker = 50
+    n_total_availability = 100
+    n_total_request = 30
+
+    if n_total_dog < n_total_owner  :
+        print(f" *!* number of owner ({n_total_owner}) is superior to the number of dogs ({n_total_dogs})")
+    if n_total_request < n_total_walker :
+        print(f" *!* number of requests ({n_total_request}) is superior to the number of walkers ({n_total_walker})")
+    
+    return n_total_past_walk, n_total_dog, n_total_owner, n_total_walker, n_total_availability, n_total_request
+
+
 def generate_all_csv(dog = True, owner = True, walker = True, walker_availability = True, past_walks = True, walker_review = True, owner_payment = True, walk_requests = True, dog_review = True):
     # for reproductibility
     nrd.seed(33)
 
-    """
-    Numbers numbers
-    """
-    n_past_walk = 200
+    n_total_past_walk, n_total_dog, n_total_owner, n_total_walker, n_total_availability, n_total_request = init_values()
 
 
     """
@@ -21,7 +37,7 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     if owner :
         # --- owners 
-        n_owner = 100
+        n_owner = n_total_owner
         
         last_name = rd.choices(["Martin", "Bernard", "Dubois", "Thomas", "Robert", "Brunissende"], k=n_owner)
         first_name = rd.choices(["Jean", "Marie", "Pierre", "Sophie", "Luc", "Octave", "Odilon", "Odon", "Oger", "Olivier", "Oury", "Pacôme", "Palémon", "Parfait", "Pascal", "Paterne", "Patrice", "Paul", "Pépin", "Perceval", "Philémon", "Philibert", "Philippe", "Philothée", "Pie", "Pierre", "Pierrick", "Prosper", "Quentin", "Raoul", "Raphaël", "Raymond", "Régis", "Réjean", "Rémi", "Renaud", "René", "Reybaud", "Richard", "Robert", "Roch", "Rodolphe", "Rodrigue", "Roger", "Roland", "Romain", "Romuald", "Roméo", "Rome", "Ronan", "Roselin", "Salomon", "Samuel", "Savin", "Savinien", "Scholastique", "Sébastien", "Séraphin", "Serge", "Séverin", "Sidoine", "Sigebert", "Sigismond", "Silvère", "Simon", "Siméon", "Sixte", "Stanislas", "Stéphane", "Stephan", "Sylvain", "Sylvestre", "Tancrède", "Tanguy", "Taurin", "Théodore"], k=n_owner)
@@ -49,8 +65,8 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
     if dog :
         # load & diplay
         df_quaggle_dog = pd.read_csv("./data_in/dogs_dataset.csv")
-        n_dog = len(df_quaggle_dog['Breed'])
-        print(df_quaggle_dog.head())
+        n_dog = min(len(df_quaggle_dog['Breed']), n_total_dog)
+        #print(df_quaggle_dog.head())
         
         random_ids = np.random.randint(1e5, 1e15, size=n_dog)
         chip_id = [str(250) + f"{r:015d}" for r in random_ids ]
@@ -62,10 +78,10 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
         dog_id = [f"{name[j]}_{chip_id[j]}" for j in range(n_dog)]
         
         
-        weight = df_quaggle_dog['Weight (kg)']
-        breed = df_quaggle_dog['Breed']
+        weight = df_quaggle_dog['Weight (kg)'][:n_dog]
+        breed = df_quaggle_dog['Breed'][:n_dog]
         picture = ["/pictures/dogs/" + idd for idd in dog_id]
-        birthdate = 2025 - np.round(df_quaggle_dog['Age (Years)'])
+        birthdate = 2025 - np.round(df_quaggle_dog['Age (Years)'])[:n_dog]
         optimal_tour_duration = np.floor( (weight + (nrd.rand(n_dog)+1)*weight/2)/3 )
         athleticism = nrd.randint(0, 10, size=n_dog)
         
@@ -90,7 +106,7 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     if walker :
         # --- walkers 
-        n_walker = 50
+        n_walker = n_total_walker
         
 
         last_name = rd.choices(["Dupont", "Lambert", "Petit", "Moreau", "Girard"], k=n_walker)
@@ -124,7 +140,7 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     if walker_availability :
         # --- walker_availability 
-        n_availability = 200
+        n_availability = n_total_availability
         walker_id = rd.choices(df_walker['walker_id'], k=n_availability)
 
         address = rd.choices(["Paris", "Lyon", "Marseille", "Toulouse", "Bordeaux"], k=n_availability)
@@ -154,7 +170,7 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     if walk_requests :
         # --- walks_requests 
-        n_request = 150
+        n_request = n_total_request
         
         dog_id = rd.choices(df_dog['dog_id'], k=n_request) 
         address = rd.choices(["Paris", "Lyon", "Marseille", "Toulouse", "Bordeaux"], k=n_request)
@@ -181,7 +197,7 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     if past_walks :
         # --- past walks
-        n_walk = n_past_walk 
+        n_walk = n_total_past_walk 
         
         dog_id = rd.choices(df_dog['dog_id'], k=n_walk) 
         walker_id = rd.choices(df_walker['walker_id'], k=n_walk)
@@ -240,7 +256,7 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     if owner_payment :
         # --- owner_payment 
-        n_payment = n_past_walk
+        n_payment = n_total_past_walk
         # payment is supposed unique for a walk
         walk_id = nrd.choice(df_past_walks['walk_id'], n_payment, replace=False)
         amount = [rd.randint(3, 40) for _ in range(n_payment)] # should go look in the walk_request, predicted_payment
