@@ -13,7 +13,6 @@ if __name__ == "__main__":
     print('Cleaning initial data ...')
     clean.clean_all_relational()
     time.sleep(2)
-
     print('Loading initial data into database ...')
     init_db.init_db()
     load_csv_to_db.main()
