@@ -76,14 +76,9 @@ elif st.session_state.selected_dog:
         st.button("Déconnexion", on_click=reset_session)
     with col2:
         st.button("Changer de chien", on_click=reset_dog)
-    print("passé 1")
-
     query_owner_name = f"SELECT first_name, last_name FROM owners WHERE owner_id='{st.session_state.connected_owner}';"
-    print("passé 2")
     df_owner = pd.read_sql(query_owner_name, con=engine)
-    print("passé 3")
     st.success(f"Connecté en tant que {df_owner[['first_name', 'last_name']].agg(' '.join, axis=1).iat[0]}")
-    print("passé 4")
 
     query_dog_name = f"SELECT name FROM dogs WHERE owner_id='{st.session_state.connected_owner}' AND dog_id='{st.session_state.selected_dog}';"
     df_dog_name = pd.read_sql(query_dog_name, con=engine)
@@ -99,23 +94,26 @@ elif st.session_state.selected_dog:
     query_dog_reviews = f"SELECT rating, comment FROM dog_reviews JOIN past_walks ON dog_reviews.walk_id=past_walks.walk_id WHERE dog_reviews.dog_id='{st.session_state.selected_dog}' AND EXTRACT(YEAR FROM past_walks.start_datetime) ={datetime.now().year};"
     df_dog_reviews = pd.read_sql(query_dog_reviews, con=engine)
  
-    query_walk_reviews = f"SELECT rating, comment, past_walks.walker_id as walker_id FROM walker_reviews JOIN past_walks ON walker_reviews.walk_id=past_walks.walk_id WHERE past_walks.dog_id='{st.session_state.selected_dog}' AND EXTRACT(YEAR FROM past_walks.start_datetime) ={datetime.now().year};"
+    query_walk_reviews = f"SELECT rating, comment, past_walks.walk_id, past_walks.walker_id as walker_id FROM walker_reviews JOIN past_walks ON walker_reviews.walk_id=past_walks.walk_id WHERE past_walks.dog_id='{st.session_state.selected_dog}' AND EXTRACT(YEAR FROM past_walks.start_datetime) ={datetime.now().year};"
     df_walk_reviews = pd.read_sql(query_walk_reviews, con=engine)
 
 
     if not df_past_walks.empty :
-        # probalement des bugs ici
+        # probalement des bugs ici (niels : oui)
         # -----------------------------
         # INDICATEURS CLÉS
         # -----------------------------
         duree_totale = (df_past_walks['end_datetime'] - df_past_walks['start_datetime']).sum()
         distance_totale = df_past_walks['distance'].sum()
 
-        promenade_pref = df_walk_reviews.loc[df_walk_reviews["rating"].idxmax()]
+        id_promenade_pref = df_walk_reviews.sort_values(by="rating", ascending=False)["walk_id"].iat[0]
+        promenade_pref = df_past_walks[df_past_walks["walk_id"] == id_promenade_pref ]
+        promenade_pref_review =  df_walk_reviews[df_walk_reviews["walk_id"] == id_promenade_pref ]
+
         promenade_plus_longue = df_past_walks.loc[df_past_walks['distance'].idxmax()]
         # Probablement un bug ici avec idxmax
         promeneur_pref = df_walk_reviews.groupby("walker_id")["rating"].mean().idxmax()
-        query_best_walker = f"SELECT first_name, last_name FROM walkers WHERE dog_reviews.dog_id='{promeneur_pref}';"
+        query_best_walker = f"SELECT first_name, last_name FROM walkers WHERE walker_id='{promeneur_pref}';"
         df_best_walker = pd.read_sql(query_best_walker, con=engine)
 
         horaire_frequent = df_past_walks['start_datetime'].dt.hour.mode().iat[0]
@@ -140,7 +138,7 @@ elif st.session_state.selected_dog:
         with col5:
             st.metric("Promenade la plus longue", f"{promenade_plus_longue['distance']:.1f} km ({promenade_plus_longue['start_datetime'].strftime('%d/%m')})")
         with col6:
-            st.metric(f"Promenade préférée de {df_dog_name['name'].iat[0]}", f"{promenade_pref['rating']} ⭐ ({promenade_pref['start_datetime'].strftime('%d/%m')})")
+            st.metric(f"Promenade préférée de {df_dog_name['name'].iat[0]}", f"{promenade_pref_review['rating']} ⭐ ({promenade_pref['start_datetime']}")#.strftime('%d/%m')})")
 
         # -----------------------------
         # COMMENTAIRES POSITIFS
