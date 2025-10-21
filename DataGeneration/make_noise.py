@@ -85,7 +85,7 @@ def ExageratedValues(df, columns, n_faked_c):
     return df
         
         
-def make_noise(pc_null=20, pc_nullrows=5, pc_exagerated=10):
+def make_noise(pc_null=20, pc_nullrows=5, pc_exagerated=10, directory_out="./data_out"):
     """
     Add noise (all kind) to automatically generated data
     """
@@ -104,7 +104,7 @@ def make_noise(pc_null=20, pc_nullrows=5, pc_exagerated=10):
         n_rows = round(( r * pc_nullrows) / 100)
         df = NullRowMaker(df, n_rows)
         # save to csv
-        df.to_csv(f"./data_noisy/df_noisy_{e}.csv", index=False)
+        df.to_csv(f"{directory_out}/df_{e}.csv", index=False)
 
     for e in to_exagerate :
         df = pd.read_csv("./data_out/df_"+e+".csv")
@@ -113,7 +113,7 @@ def make_noise(pc_null=20, pc_nullrows=5, pc_exagerated=10):
         n_faked_c = round(( r * pc_exagerated) / 100)
         ExageratedValues(df, columns=to_exagerate[e], n_faked_c=n_faked_c)
         # save to csv
-        df.to_csv(f"./data_noisy/df_noisy_{e}.csv", index=False)
+        df.to_csv(f"{directory_out}/df_{e}.csv", index=False)
     return None
     
 
