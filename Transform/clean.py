@@ -209,7 +209,8 @@ def clean_relations(
     ]
 
     df_walkrequests = df_walkrequests[
-        df_walkrequests['dog_id'].isin(df_dog['dog_id'])
+        df_walkrequests['dog_id'].isin(df_dog['dog_id']) &
+        df_walkrequests['favorite_walker_id'].isin(df_walker['walker_id'])
     ]
 
     df_payment = df_payment[
