@@ -5,20 +5,18 @@ import random as rd
 import string
 
 
-def init_values():
+def init_values(n_total_past_walk = 1000,
+                n_total_dog = 100,
+                n_total_owner = 50,
+                n_total_walker = 50,
+                n_total_availability = 100,
+                n_total_request = 30):
     """
     Numbers numbers
     """
-    n_total_past_walk = 1000
-    n_total_dog = 100
-    n_total_owner = 50
-    n_total_walker = 50
-    n_total_availability = 100
-    n_total_request = 30
-
     if n_total_dog < n_total_owner  :
-        print(f" *!* number of owner ({n_total_owner}) is superior to the number of dogs ({n_total_dogs})")
-    if n_total_request < n_total_walker :
+        print(f" *!* number of owner ({n_total_owner}) is superior to the number of dogs ({n_total_dog})")
+    if n_total_request > n_total_walker :
         print(f" *!* number of requests ({n_total_request}) is superior to the number of walkers ({n_total_walker})")
     
     return n_total_past_walk, n_total_dog, n_total_owner, n_total_walker, n_total_availability, n_total_request
@@ -230,23 +228,26 @@ def generate_all_csv(dog = True, owner = True, walker = True, walker_availabilit
 
     # --- Walker Reviews
     if walker_review:
+        comments = [f"What a {rd.choices(["wonderful", "horrible", "tremendous", "idiotic", "fascinating"])[0]} dog ! I was {rd.choices(["terrified", "super happy"])[0]} to walk it." for wid in df_past_walks['walk_id']]
         df_walker_review = pd.DataFrame({
             'review_id': [wid + "_walkerreview" for wid in df_past_walks['walk_id']],
             'walk_id': df_past_walks['walk_id'],
             'walker_id': df_past_walks['walker_id'],
             'rating': nrd.choice(np.arange(1, 6), size=len(df_past_walks), replace=True, p=[0.1, 0.05, 0.05, 0.3, 0.5]),
-            'comment': ["Commentaire pour walk " + str(i) for i in range(len(df_past_walks))]
+            'comment': comments
         })
         df_walker_review.to_csv("./data_out/df_WalkerReview.csv", index=False)
 
     # --- Dog Reviews
     if dog_review:
+        comments = [f"What a {rd.choices(["masterclassic", "superb", "tremendous", "terrible", "mysterious"])[0]} Toutour my dog had ! The walker was the most {rd.choices(["awfulest", "nice", "wonderful", "dumb", "kind"])[0]} person I ever met" for wid in df_past_walks['walk_id']]
+
         df_dog_review = pd.DataFrame({
             'review_id': [wid + "_dogreview" for wid in df_past_walks['walk_id']],
             'walk_id': df_past_walks['walk_id'],
             'dog_id': df_past_walks['dog_id'],
             'rating': nrd.choice(np.arange(1, 6), size=len(df_past_walks), replace=True, p=[0.1, 0.05, 0.05, 0.3, 0.5]),
-            'comment': ["Commentaire pour chien " + str(i) for i in range(len(df_past_walks))]
+            'comment': comments
         })
         df_dog_review.to_csv("./data_out/df_DogReview.csv", index=False)
 
