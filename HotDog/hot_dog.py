@@ -76,10 +76,14 @@ elif st.session_state.selected_dog:
         st.button("Déconnexion", on_click=reset_session)
     with col2:
         st.button("Changer de chien", on_click=reset_dog)
+    print("passé 1")
 
     query_owner_name = f"SELECT first_name, last_name FROM owners WHERE owner_id='{st.session_state.connected_owner}';"
+    print("passé 2")
     df_owner = pd.read_sql(query_owner_name, con=engine)
+    print("passé 3")
     st.success(f"Connecté en tant que {df_owner[['first_name', 'last_name']].agg(' '.join, axis=1).iat[0]}")
+    print("passé 4")
 
     query_dog_name = f"SELECT name FROM dogs WHERE owner_id='{st.session_state.connected_owner}' AND dog_id='{st.session_state.selected_dog}';"
     df_dog_name = pd.read_sql(query_dog_name, con=engine)
@@ -95,7 +99,7 @@ elif st.session_state.selected_dog:
     query_dog_reviews = f"SELECT rating, comment FROM dog_reviews JOIN past_walks ON dog_reviews.walk_id=past_walks.walk_id WHERE dog_reviews.dog_id='{st.session_state.selected_dog}' AND EXTRACT(YEAR FROM past_walks.start_datetime) ={datetime.now().year};"
     df_dog_reviews = pd.read_sql(query_dog_reviews, con=engine)
  
-    query_walk_reviews = f"SELECT rating, comment FROM walker_reviews JOIN past_walks ON walker_reviews.walk_id=past_walks.walk_id WHERE past_walks.dog_id='{st.session_state.selected_dog}' AND EXTRACT(YEAR FROM past_walks.start_datetime) ={datetime.now().year};"
+    query_walk_reviews = f"SELECT rating, comment, past_walks.walker_id as walker_id FROM walker_reviews JOIN past_walks ON walker_reviews.walk_id=past_walks.walk_id WHERE past_walks.dog_id='{st.session_state.selected_dog}' AND EXTRACT(YEAR FROM past_walks.start_datetime) ={datetime.now().year};"
     df_walk_reviews = pd.read_sql(query_walk_reviews, con=engine)
 
 
